@@ -59,38 +59,7 @@
                 },
                 initialView: 'dayGridMonth',
                 editable: true,
-                events: [
-                    // Turno Giornaliero
-                    {
-                        title: 'Turno Giornaliero',
-                        start: '2024-09-02',
-                        end: '2024-09-07',
-                        className: 'fc-event-giornaliero',
-                        extendedProps: {
-                            description: 'Dalle 6:00 alle 18:00. Si ripete ogni 3 settimane.'
-                        }
-                    },
-                    // Turno Pomeriggio
-                    {
-                        title: 'Turno Pomeriggio',
-                        start: '2024-09-09',
-                        end: '2024-09-13',
-                        className: 'fc-event-pomeriggio',
-                        extendedProps: {
-                            description: 'Dalle 13:00 alle 22:00. Si ripete ogni 3 settimane.'
-                        }
-                    },
-                    // Turno Mattino
-                    {
-                        title: 'Turno Mattino',
-                        start: '2024-09-16',
-                        end: '2024-09-21',
-                        className: 'fc-event-mattino',
-                        extendedProps: {
-                            description: 'Dalle 6:00 alle 13:00. Si ripete ogni 3 settimane.'
-                        }
-                    }
-                ],
+                events: generateEvents(),
                 eventContent: function(arg) {
                     let customHtml = `<div class="fc-event-title">${arg.event.title}</div>`;
                     if (arg.event.extendedProps.description) {
@@ -102,6 +71,47 @@
 
             calendar.render();
         });
+
+        // Funzione per generare eventi ripetitivi
+        function generateEvents() {
+            const events = [];
+            const startDate = new Date(2024, 8, 2); // 2 settembre 2024
+            const turnDuration = 7; // Durata di un turno in giorni
+            const repeatInterval = 21; // Intervallo di ripetizione in giorni
+
+            // Turno Giornaliero
+            addRepeatingEvent(events, 'Turno Giornaliero', '#F1C40F', startDate, turnDuration, repeatInterval);
+
+            // Turno Pomeriggio
+            const pmStartDate = new Date(2024, 8, 9); // 9 settembre 2024
+            addRepeatingEvent(events, 'Turno Pomeriggio', '#00BFFF', pmStartDate, turnDuration, repeatInterval);
+
+            // Turno Mattino
+            const amStartDate = new Date(2024, 8, 16); // 16 settembre 2024
+            addRepeatingEvent(events, 'Turno Mattino', '#FFA500', amStartDate, turnDuration, repeatInterval);
+
+            return events;
+        }
+
+        // Funzione per aggiungere eventi ripetitivi
+        function addRepeatingEvent(events, title, color, startDate, duration, interval) {
+            for (let i = 0; i < 12; i++) { // Limita a 12 mesi di eventi
+                const start = new Date(startDate);
+                start.setDate(start.getDate() + (i * interval));
+                const end = new Date(start);
+                end.setDate(end.getDate() + duration - 1);
+
+                events.push({
+                    title: title,
+                    start: start.toISOString().split('T')[0],
+                    end: end.toISOString().split('T')[0],
+                    className: `fc-event-${title.toLowerCase().replace(' ', '-')}`,
+                    extendedProps: {
+                        description: `Inizio: ${start.toLocaleDateString()} - Fine: ${end.toLocaleDateString()}. Si ripete ogni 3 settimane.`
+                    }
+                });
+            }
+        }
     </script>
 </body>
 </html>
