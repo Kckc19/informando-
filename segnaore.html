@@ -177,7 +177,7 @@
             const primaGiorno = new Date(anno, mese, 1).getDay();  // Giorno della settimana del primo giorno del mese
 
             // Giorni della settimana
-            const giorniSettimana = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'];
+            const giorniSettimana = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
             giorniSettimana.forEach(giorno => {
                 let dayHeader = document.createElement('div');
                 dayHeader.textContent = giorno;
@@ -203,7 +203,7 @@
 
                 // Evidenzia domenica
                 const giornoSettimana = (primaGiorno + i - 1) % 7;
-                if (giornoSettimana === 6) {
+                if (giornoSettimana === 0) {  // Domenica
                     dayDiv.classList.add('sunday');
                 }
 
