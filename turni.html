@@ -199,44 +199,55 @@
 
                     // Aggiungi eventi
                     const currentDateISO = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), i).toISOString().split('T')[0];
-                    const daysSinceStart = (new Date(currentDateISO) - new Date('2024-09-02')) / (24 * 60 * 60 * 1000);
-                    
+                    const daysSinceStart = (new Date(currentDateISO) - new Date('2024-09-01')) / (24 * 60 * 60 * 1000);
+
+                    let turnStartDate;
                     if (daysSinceStart % 21 === 0) {
-                        dayElement.classList.add('event-giornaliero');
-                        dayElement.setAttribute('data-event', 'Giornaliero');
-                    }
-                    if (daysSinceStart % 21 === 7) {
-                        dayElement.classList.add('event-pomeriggio');
-                        dayElement.setAttribute('data-event', 'Pomeriggio');
-                    }
-                    if (daysSinceStart % 21 === 14) {
-                        dayElement.classList.add('event-mattino');
-                        dayElement.setAttribute('data-event', 'Mattino');
+                        turnStartDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), i);
+                        for (let j = 0; j < 7; j++) { // Giorni del turno giornaliero
+                            if (i + j <= totalDays) {
+                                const dayElement = calendarEl.children[(dayOfWeek + i - 1 + j) % 7];
+                                dayElement.classList.add('event-giornaliero');
+                                dayElement.setAttribute('data-event', 'Giornaliero');
+                            }
+                        }
+                    } else if (daysSinceStart % 21 === 7) {
+                        turnStartDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), i);
+                        for (let j = 0; j < 5; j++) { // Giorni del turno pomeridiano
+                            if (i + j <= totalDays) {
+                                const dayElement = calendarEl.children[(dayOfWeek + i - 1 + j) % 7];
+                                dayElement.classList.add('event-pomeriggio');
+                                dayElement.setAttribute('data-event', 'Pomeriggio');
+                            }
+                        }
+                    } else if (daysSinceStart % 21 === 14) {
+                        turnStartDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), i);
+                        for (let j = 0; j < 6; j++) { // Giorni del turno mattutino
+                            if (i + j <= totalDays) {
+                                const dayElement = calendarEl.children[(dayOfWeek + i - 1 + j) % 7];
+                                dayElement.classList.add('event-mattino');
+                                dayElement.setAttribute('data-event', 'Mattino');
+                            }
+                        }
                     }
 
                     calendarEl.appendChild(dayElement);
                 }
 
-                // Aggiorna il mese e l'anno visualizzati
-                const monthNames = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"];
-                monthYearEl.textContent = `${monthNames[currentMonth.getMonth()]} ${currentMonth.getFullYear()}`;
-            }
-
-            function updateCalendar() {
-                renderCalendar();
+                monthYearEl.textContent = `${currentMonth.toLocaleString('default', { month: 'long' })} ${currentMonth.getFullYear()}`;
             }
 
             prevMonthButton.addEventListener('click', function() {
                 currentMonth.setMonth(currentMonth.getMonth() - 1);
-                updateCalendar();
+                renderCalendar();
             });
 
             nextMonthButton.addEventListener('click', function() {
                 currentMonth.setMonth(currentMonth.getMonth() + 1);
-                updateCalendar();
+                renderCalendar();
             });
 
-            updateCalendar();
+            renderCalendar();
         });
     </script>
 </body>
