@@ -77,6 +77,8 @@
                     right: 'dayGridMonth,dayGridWeek,dayGridDay'
                 },
                 initialView: 'dayGridMonth',
+                locale: 'it', // Imposta la localizzazione su italiano
+                dayHeaderFormat: { weekday: 'long' }, // Usa il formato del giorno della settimana lungo
                 editable: true,
                 events: generateEvents(),
                 dayCellDidMount: function(info) {
