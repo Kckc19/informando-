@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Turni</title>
+    <title>Calendario Turni</title>
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.css' rel='stylesheet' />
     <style>
         body {
@@ -23,7 +23,11 @@
             margin: auto;
         }
         .fc-daygrid-day-number {
-            color: #F1C40F; /* Colore del numero dei giorni */
+            color: #EAEAEA; /* Colore del numero dei giorni */
+        }
+        .fc-day-sun, .fc-day-holiday {
+            background-color: #E74C3C !important; /* Colore rosso per le domeniche e i giorni festivi */
+            color: white !important;
         }
         .fc-event-giornaliero {
             background-color: #F1C40F !important; /* Colore giallo per il turno giornaliero */
@@ -33,6 +37,25 @@
         }
         .fc-event-mattino {
             background-color: #FFA500 !important; /* Colore arancione per il turno mattutino */
+        }
+        .fc-daygrid-day-event {
+            border-radius: 0 !important; /* Rimuovi il bordo */
+        }
+        .fc-daygrid-day-content {
+            position: relative;
+        }
+        .fc-daygrid-day-content::after {
+            content: attr(data-event);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.2);
+            color: #EAEAEA;
+            padding: 0.2rem;
+            border-radius: 0.3rem;
+            font-size: 0.9rem;
         }
     </style>
 </head>
@@ -56,15 +79,27 @@
                 initialView: 'dayGridMonth',
                 editable: true,
                 events: generateEvents(),
-                eventContent: function(arg) {
-                    return { html: `<div class="fc-event-title">${arg.event.title}</div>` };
+                dayCellDidMount: function(info) {
+                    // Evidenzia le domeniche e i festivi
+                    const date = info.date;
+                    if (date.getDay() === 0 || isHoliday(date)) {
+                        info.el.classList.add('fc-day-sun');
+                    }
+
+                    // Aggiungi le etichette dei turni
+                    const events = calendar.getEvents().filter(event => {
+                        const eventDate = new Date(event.start);
+                        return eventDate.toDateString() === date.toDateString();
+                    });
+                    if (events.length) {
+                        info.el.setAttribute('data-event', events.map(e => e.title).join(', '));
+                    }
                 }
             });
 
             calendar.render();
         });
 
-        // Funzione per generare eventi ripetitivi
         function generateEvents() {
             const events = [];
             const startDate = new Date(2024, 8, 2); // 2 settembre 2024
@@ -76,7 +111,7 @@
 
             // Turno Pomeriggio
             const pmStartDate = new Date(2024, 8, 9); // 9 settembre 2024
-            addRepeatingEvent(events, 'Pomeriggio', 'fc-event-pomeriggio', pmStartDate, 5, repeatInterval);
+            addRepeatingEvent(events, 'Pomeriggio', 'fc-event-pomeriggio', pmStartDate, 5, repeatInterval, { weekdays: [1, 2, 3, 4, 5] });
 
             // Turno Mattino
             const amStartDate = new Date(2024, 8, 16); // 16 settembre 2024
@@ -85,24 +120,52 @@
             return events;
         }
 
-        // Funzione per aggiungere eventi ripetitivi
-        function addRepeatingEvent(events, title, className, startDate, duration, interval) {
+        function addRepeatingEvent(events, title, className, startDate, duration, interval, options = {}) {
             for (let i = 0; i < 12; i++) { // Limita a 12 mesi di eventi
                 const start = new Date(startDate);
                 start.setDate(start.getDate() + (i * interval));
                 const end = new Date(start);
                 end.setDate(end.getDate() + duration - 1);
 
-                events.push({
-                    title: title,
-                    start: start.toISOString().split('T')[0],
-                    end: end.toISOString().split('T')[0],
-                    className: className,
-                    extendedProps: {
-                        description: `Inizio: ${start.toLocaleDateString()} - Fine: ${end.toLocaleDateString()}.`
+                // Escludi i giorni non lavorativi per il turno pomeridiano
+                if (options.weekdays) {
+                    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+                        if (!options.weekdays.includes(d.getDay())) {
+                            continue;
+                        }
+                        events.push({
+                            title: title,
+                            start: d.toISOString().split('T')[0],
+                            end: d.toISOString().split('T')[0],
+                            className: className,
+                            extendedProps: {
+                                description: `Inizio: ${start.toLocaleDateString()} - Fine: ${end.toLocaleDateString()}.`
+                            }
+                        });
                     }
-                });
+                } else {
+                    events.push({
+                        title: title,
+                        start: start.toISOString().split('T')[0],
+                        end: end.toISOString().split('T')[0],
+                        className: className,
+                        extendedProps: {
+                            description: `Inizio: ${start.toLocaleDateString()} - Fine: ${end.toLocaleDateString()}.`
+                        }
+                    });
+                }
             }
+        }
+
+        function isHoliday(date) {
+            // Aggiungi qui le date festivi specifici se necessario
+            const holidays = [
+                new Date(2024, 11, 25), // Natale
+                new Date(2024, 0, 1),   // Capodanno
+                // Aggiungi altre festività
+            ];
+
+            return holidays.some(holiday => date.toDateString() === holiday.toDateString());
         }
     </script>
 </body>
