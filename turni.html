@@ -29,7 +29,6 @@
             background-color: #333;
         }
         .calendar-header {
-            display: contents;
             background-color: #444;
             color: #EAEAEA;
             text-align: center;
@@ -73,9 +72,6 @@
             text-overflow: ellipsis;
         }
         @media (max-width: 768px) {
-            .calendar {
-                grid-template-columns: repeat(7, 1fr);
-            }
             .calendar-day {
                 min-height: 60px;
                 font-size: 0.8rem;
@@ -87,10 +83,6 @@
             }
         }
         @media (max-width: 480px) {
-            .calendar {
-                grid-template-columns: repeat(7, 1fr);
-                gap: 0;
-            }
             .calendar-day {
                 min-height: 50px;
                 font-size: 0.7rem;
@@ -121,7 +113,6 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const calendarEl = document.getElementById('calendar');
-            const daysInMonth = 31; // Numero massimo di giorni in un mese
             const startDate = new Date(2024, 8, 1); // 1 settembre 2024
             const endDate = new Date(2025, 11, 31); // 31 dicembre 2025
             const turnDuration = 7; // Durata di un turno in giorni
@@ -141,37 +132,35 @@
                     const dayOfWeek = firstDayOfMonth.getDay();
                     const totalDays = lastDayOfMonth.getDate();
                     
-                    for (let i = 0; i < 7; i++) {
-                        if (currentDate.getMonth() !== startDate.getMonth() && i === 0) {
-                            currentDate.setDate(1);
-                            break;
-                        }
-                        if (i === 0 && currentDate.getDate() === 1) {
-                            for (let j = 0; j < dayOfWeek; j++) {
-                                calendarEl.innerHTML += '<div class="calendar-day"></div>';
-                            }
-                        }
-                        if (currentDate.getDate() <= totalDays) {
-                            const dayClass = currentDate.getDay() === 0 ? 'sun' : '';
-                            const dayElement = document.createElement('div');
-                            dayElement.className = `calendar-day ${dayClass}`;
-                            dayElement.textContent = currentDate.getDate();
-                            calendarEl.appendChild(dayElement);
-
-                            // Aggiungi eventi
-                            if (currentDate >= new Date(2024, 8, 2) && (currentDate - new Date(2024, 8, 2)) % (repeatInterval * 24 * 60 * 60 * 1000) === 0) {
-                                addEvent(dayElement, 'Giornaliero');
-                            }
-                            if (currentDate >= new Date(2024, 8, 9) && (currentDate - new Date(2024, 8, 9)) % (repeatInterval * 24 * 60 * 60 * 1000) === 0) {
-                                addEvent(dayElement, 'Pomeriggio');
-                            }
-                            if (currentDate >= new Date(2024, 8, 16) && (currentDate - new Date(2024, 8, 16)) % (repeatInterval * 24 * 60 * 60 * 1000) === 0) {
-                                addEvent(dayElement, 'Mattino');
-                            }
-                            
-                            currentDate.setDate(currentDate.getDate() + 1);
+                    // Crea intestazioni per la settimana
+                    if (currentDate.getDate() === 1) {
+                        for (let i = 0; i < dayOfWeek; i++) {
+                            calendarEl.innerHTML += '<div class="calendar-day"></div>';
                         }
                     }
+
+                    // Aggiungi giorni del mese
+                    for (let i = 1; i <= totalDays; i++) {
+                        const dayElement = document.createElement('div');
+                        const dayClass = currentDate.getDay() === 0 ? 'sun' : '';
+                        dayElement.className = `calendar-day ${dayClass}`;
+                        dayElement.textContent = i;
+                        calendarEl.appendChild(dayElement);
+
+                        // Aggiungi eventi
+                        const currentDateISO = new Date(currentDate.getFullYear(), currentDate.getMonth(), i).toISOString().split('T')[0];
+                        if (currentDate >= new Date(2024, 8, 2) && (currentDate - new Date(2024, 8, 2)) % (repeatInterval * 24 * 60 * 60 * 1000) === 0) {
+                            addEvent(dayElement, 'Giornaliero');
+                        }
+                        if (currentDate >= new Date(2024, 8, 9) && (currentDate - new Date(2024, 8, 9)) % (repeatInterval * 24 * 60 * 60 * 1000) === 0) {
+                            addEvent(dayElement, 'Pomeriggio');
+                        }
+                        if (currentDate >= new Date(2024, 8, 16) && (currentDate - new Date(2024, 8, 16)) % (repeatInterval * 24 * 60 * 60 * 1000) === 0) {
+                            addEvent(dayElement, 'Mattino');
+                        }
+                    }
+                    currentDate.setMonth(currentDate.getMonth() + 1);
+                    currentDate.setDate(1);
                 }
             }
 
