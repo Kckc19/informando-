@@ -25,8 +25,8 @@
         .fc-daygrid-day-number {
             color: #EAEAEA; /* Colore del numero dei giorni */
         }
-        .fc-day-sun, .fc-day-holiday {
-            background-color: #E74C3C !important; /* Colore rosso per le domeniche e i giorni festivi */
+        .fc-day-sun {
+            background-color: #E74C3C !important; /* Colore rosso per le domeniche */
             color: white !important;
         }
         .fc-event-giornaliero {
@@ -80,9 +80,9 @@
                 editable: true,
                 events: generateEvents(),
                 dayCellDidMount: function(info) {
-                    // Evidenzia le domeniche e i festivi
+                    // Evidenzia le domeniche
                     const date = info.date;
-                    if (date.getDay() === 0 || isHoliday(date)) {
+                    if (date.getDay() === 0) {
                         info.el.classList.add('fc-day-sun');
                     }
 
@@ -109,7 +109,7 @@
             // Turno Giornaliero
             addRepeatingEvent(events, 'Giornaliero', 'fc-event-giornaliero', startDate, turnDuration, repeatInterval);
 
-            // Turno Pomeriggio
+            // Turno Pomeridiano
             const pmStartDate = new Date(2024, 8, 9); // 9 settembre 2024
             addRepeatingEvent(events, 'Pomeriggio', 'fc-event-pomeriggio', pmStartDate, 5, repeatInterval, { weekdays: [1, 2, 3, 4, 5] });
 
@@ -127,10 +127,10 @@
                 const end = new Date(start);
                 end.setDate(end.getDate() + duration - 1);
 
-                // Escludi i giorni non lavorativi per il turno pomeridiano
+                // Escludi le domeniche per gli eventi
                 if (options.weekdays) {
                     for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-                        if (!options.weekdays.includes(d.getDay())) {
+                        if (d.getDay() === 0 || !options.weekdays.includes(d.getDay())) {
                             continue;
                         }
                         events.push({
@@ -144,28 +144,22 @@
                         });
                     }
                 } else {
-                    events.push({
-                        title: title,
-                        start: start.toISOString().split('T')[0],
-                        end: end.toISOString().split('T')[0],
-                        className: className,
-                        extendedProps: {
-                            description: `Inizio: ${start.toLocaleDateString()} - Fine: ${end.toLocaleDateString()}.`
+                    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+                        if (d.getDay() === 0) {
+                            continue;
                         }
-                    });
+                        events.push({
+                            title: title,
+                            start: d.toISOString().split('T')[0],
+                            end: d.toISOString().split('T')[0],
+                            className: className,
+                            extendedProps: {
+                                description: `Inizio: ${start.toLocaleDateString()} - Fine: ${end.toLocaleDateString()}.`
+                            }
+                        });
+                    }
                 }
             }
-        }
-
-        function isHoliday(date) {
-            // Aggiungi qui le date festivi specifici se necessario
-            const holidays = [
-                new Date(2024, 11, 25), // Natale
-                new Date(2024, 0, 1),   // Capodanno
-                // Aggiungi altre festività
-            ];
-
-            return holidays.some(holiday => date.toDateString() === holiday.toDateString());
         }
     </script>
 </body>
