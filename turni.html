@@ -86,16 +86,21 @@
                     const date = info.date;
                     if (date.getDay() === 0) {
                         info.el.classList.add('fc-day-sun');
+                        info.el.removeAttribute('data-event'); // Rimuove i turni dalle domeniche
+                    } else {
+                        // Aggiungi le etichette dei turni
+                        const events = calendar.getEvents().filter(event => {
+                            const eventDate = new Date(event.start);
+                            return eventDate.toDateString() === date.toDateString();
+                        });
+                        if (events.length) {
+                            info.el.setAttribute('data-event', events.map(e => e.title).join(', '));
+                        }
                     }
-
-                    // Aggiungi le etichette dei turni
-                    const events = calendar.getEvents().filter(event => {
-                        const eventDate = new Date(event.start);
-                        return eventDate.toDateString() === date.toDateString();
-                    });
-                    if (events.length) {
-                        info.el.setAttribute('data-event', events.map(e => e.title).join(', '));
-                    }
+                },
+                validRange: {
+                    start: '2024-09-01',
+                    end: '2025-12-31' // Imposta l'intervallo fino a dicembre 2025
                 }
             });
 
@@ -111,7 +116,7 @@
             // Turno Giornaliero
             addRepeatingEvent(events, 'Giornaliero', 'fc-event-giornaliero', startDate, turnDuration, repeatInterval);
 
-            // Turno Pomeridiano
+            // Turno Pomeridiano (dal lunedì al venerdì)
             const pmStartDate = new Date(2024, 8, 9); // 9 settembre 2024
             addRepeatingEvent(events, 'Pomeriggio', 'fc-event-pomeriggio', pmStartDate, 5, repeatInterval, { weekdays: [1, 2, 3, 4, 5] });
 
@@ -123,7 +128,7 @@
         }
 
         function addRepeatingEvent(events, title, className, startDate, duration, interval, options = {}) {
-            for (let i = 0; i < 12; i++) { // Limita a 12 mesi di eventi
+            for (let i = 0; i < 16; i++) { // Limita a 16 mesi di eventi (per estendere fino a dicembre 2025)
                 const start = new Date(startDate);
                 start.setDate(start.getDate() + (i * interval));
                 const end = new Date(start);
