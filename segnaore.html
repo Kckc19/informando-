@@ -56,17 +56,21 @@
         }
         .day {
             padding: 15px;
-            background-color: #007bff;
-            color: white;
+            background-color: transparent;  /* Non colorato di default */
+            color: #333;
             text-align: center;
+            border: 1px solid #ccc;
             border-radius: 5px;
             cursor: pointer;
-        }
-        .day.marked {
-            background-color: #28a745;
+            transition: background-color 0.3s;
         }
         .day.selected {
             background-color: orange;
+            color: white;
+        }
+        .day.marked {
+            background-color: #28a745;
+            color: white;
         }
         .total-hours {
             background-color: #ffc107;
@@ -160,12 +164,12 @@
                 let dayDiv = document.createElement('div');
                 dayDiv.classList.add('day');
                 dayDiv.textContent = i;
-                
+
                 // Segna i giorni che hanno già ore segnate
                 if (oreGiorno[anno] && oreGiorno[anno][mese] && oreGiorno[anno][mese][i]) {
                     dayDiv.classList.add('marked');
                 }
-                
+
                 dayDiv.onclick = () => selezionaGiorno(i, dayDiv);
                 calendarDiv.appendChild(dayDiv);
             }
@@ -222,10 +226,10 @@
 
             aggiornaTotaleOre();
             mostraDettagliGiorni();
-            generaCalendario();  // Aggiorna il calendario per segnare il giorno
+            generaCalendario();  // Aggiorna il calendario per mostrare i giorni segnati
         }
 
-        // Funzione per segnare le ferie
+        // Funzione per segnalare le ferie
         function segnalaFerie() {
             if (!selectedDay) {
                 alert("Seleziona un giorno per segnalare le ferie.");
