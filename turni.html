@@ -49,14 +49,18 @@
             background-color: #E74C3C;
             color: white;
         }
+        .calendar-day.holiday {
+            background-color: #E74C3C;
+            color: white;
+        }
         .calendar-day.event-giornaliero {
             background-color: #F1C40F;
         }
         .calendar-day.event-pomeriggio {
-            background-color: #00BFFF;
+            background-color: #8A2BE2; /* Viola per il turno pomeridiano */
         }
         .calendar-day.event-mattino {
-            background-color: #FFA500;
+            background-color: #00BFFF;
         }
         .calendar-day::after {
             content: attr(data-event);
@@ -126,12 +130,17 @@
             const endDate = new Date(2025, 11, 31); // 31 dicembre 2025
             const turnDuration = 7; // Durata di un turno in giorni
             const repeatInterval = 21; // Intervallo di ripetizione in giorni
+            const holidays = ['2024-12-25', '2024-01-01']; // Esempio di festività (Natale e Capodanno)
 
             let currentDate = new Date(startDate);
 
             function addEvent(dayElement, title) {
                 dayElement.setAttribute('data-event', title);
                 dayElement.classList.add(`event-${title.toLowerCase()}`);
+            }
+
+            function isHoliday(date) {
+                return holidays.includes(date.toISOString().split('T')[0]);
             }
 
             function generateCalendar() {
@@ -154,7 +163,11 @@
                         const dayClass = currentDate.getDay() === 0 ? 'sun' : '';
                         dayElement.className = `calendar-day ${dayClass}`;
                         dayElement.textContent = i;
-                        calendarEl.appendChild(dayElement);
+
+                        // Gestisci le festività
+                        if (isHoliday(new Date(currentDate.getFullYear(), currentDate.getMonth(), i))) {
+                            dayElement.classList.add('holiday');
+                        }
 
                         // Aggiungi eventi
                         const currentDateISO = new Date(currentDate.getFullYear(), currentDate.getMonth(), i).toISOString().split('T')[0];
@@ -167,7 +180,11 @@
                         if (currentDate >= new Date(2024, 8, 16) && (currentDate - new Date(2024, 8, 16)) % (repeatInterval * 24 * 60 * 60 * 1000) === 0) {
                             addEvent(dayElement, 'Mattino');
                         }
+
+                        calendarEl.appendChild(dayElement);
+                        currentDate.setDate(currentDate.getDate() + 1);
                     }
+
                     currentDate.setMonth(currentDate.getMonth() + 1);
                     currentDate.setDate(1);
                 }
