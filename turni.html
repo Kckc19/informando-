@@ -20,8 +20,27 @@
         .calendar-container {
             max-width: 100%;
             margin: auto;
-            overflow-x: auto;
+            overflow: hidden;
             padding: 0 1rem;
+        }
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #444;
+            color: #EAEAEA;
+            padding: 0.5rem;
+        }
+        .calendar-controls button {
+            background: #F1C40F;
+            border: none;
+            color: #2E2E2E;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .calendar-controls button:hover {
+            background: #F39C12;
         }
         .calendar {
             display: grid;
@@ -29,7 +48,7 @@
             gap: 1px;
             background-color: #333;
         }
-        .calendar-header {
+        .calendar-header-day {
             background-color: #444;
             color: #EAEAEA;
             text-align: center;
@@ -45,11 +64,7 @@
             position: relative;
             box-sizing: border-box;
         }
-        .calendar-day.sun {
-            background-color: #E74C3C;
-            color: white;
-        }
-        .calendar-day.holiday {
+        .calendar-day.sun, .calendar-day.holiday {
             background-color: #E74C3C;
             color: white;
         }
@@ -111,86 +126,104 @@
 <body>
     <div class="calendar-container">
         <h1>Calendario Turni</h1>
+        <div class="calendar-controls">
+            <button id="prev-month">« Mese Precedente</button>
+            <button id="next-month">Mese Successivo »</button>
+        </div>
         <div class="calendar" id="calendar">
-            <div class="calendar-header">Lun</div>
-            <div class="calendar-header">Mar</div>
-            <div class="calendar-header">Mer</div>
-            <div class="calendar-header">Gio</div>
-            <div class="calendar-header">Ven</div>
-            <div class="calendar-header">Sab</div>
-            <div class="calendar-header">Dom</div>
-            <!-- Le caselle dei giorni saranno inserite dinamicamente dallo script -->
+            <!-- Intestazioni dei giorni della settimana -->
+            <div class="calendar-header-day">Lun</div>
+            <div class="calendar-header-day">Mar</div>
+            <div class="calendar-header-day">Mer</div>
+            <div class="calendar-header-day">Gio</div>
+            <div class="calendar-header-day">Ven</div>
+            <div class="calendar-header-day">Sab</div>
+            <div class="calendar-header-day">Dom</div>
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const calendarEl = document.getElementById('calendar');
-            const startDate = new Date(2024, 8, 1); // 1 settembre 2024
-            const endDate = new Date(2025, 11, 31); // 31 dicembre 2025
-            const turnDuration = 7; // Durata di un turno in giorni
-            const repeatInterval = 21; // Intervallo di ripetizione in giorni
+            const prevMonthButton = document.getElementById('prev-month');
+            const nextMonthButton = document.getElementById('next-month');
+
+            let currentMonth = new Date();
+            currentMonth.setDate(1); // Inizia dal primo giorno del mese
+
             const holidays = ['2024-12-25', '2024-01-01']; // Esempio di festività (Natale e Capodanno)
-
-            let currentDate = new Date(startDate);
-
-            function addEvent(dayElement, title) {
-                dayElement.setAttribute('data-event', title);
-                dayElement.classList.add(`event-${title.toLowerCase()}`);
-            }
 
             function isHoliday(date) {
                 return holidays.includes(date.toISOString().split('T')[0]);
             }
 
-            function generateCalendar() {
-                while (currentDate <= endDate) {
-                    const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-                    const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-                    const dayOfWeek = firstDayOfMonth.getDay();
-                    const totalDays = lastDayOfMonth.getDate();
+            function renderCalendar() {
+                calendarEl.innerHTML = `
+                    <div class="calendar-header-day">Lun</div>
+                    <div class="calendar-header-day">Mar</div>
+                    <div class="calendar-header-day">Mer</div>
+                    <div class="calendar-header-day">Gio</div>
+                    <div class="calendar-header-day">Ven</div>
+                    <div class="calendar-header-day">Sab</div>
+                    <div class="calendar-header-day">Dom</div>
+                `;
 
-                    // Crea intestazioni per la settimana
-                    if (currentDate.getDate() === 1) {
-                        for (let i = 0; i < dayOfWeek; i++) {
-                            calendarEl.innerHTML += '<div class="calendar-day"></div>';
-                        }
+                const firstDayOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
+                const lastDayOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
+                const dayOfWeek = firstDayOfMonth.getDay();
+                const totalDays = lastDayOfMonth.getDate();
+
+                // Crea celle vuote per i giorni precedenti
+                for (let i = 0; i < dayOfWeek; i++) {
+                    calendarEl.innerHTML += '<div class="calendar-day"></div>';
+                }
+
+                // Aggiungi giorni del mese
+                for (let i = 1; i <= totalDays; i++) {
+                    const dayElement = document.createElement('div');
+                    const dayClass = currentMonth.getDay() === 0 ? 'sun' : '';
+                    dayElement.className = `calendar-day ${dayClass}`;
+                    dayElement.textContent = i;
+
+                    // Gestisci le festività
+                    if (isHoliday(new Date(currentMonth.getFullYear(), currentMonth.getMonth(), i))) {
+                        dayElement.classList.add('holiday');
                     }
 
-                    // Aggiungi giorni del mese
-                    for (let i = 1; i <= totalDays; i++) {
-                        const dayElement = document.createElement('div');
-                        const dayClass = currentDate.getDay() === 0 ? 'sun' : '';
-                        dayElement.className = `calendar-day ${dayClass}`;
-                        dayElement.textContent = i;
-
-                        // Gestisci le festività
-                        if (isHoliday(new Date(currentDate.getFullYear(), currentDate.getMonth(), i))) {
-                            dayElement.classList.add('holiday');
-                        }
-
-                        // Aggiungi eventi
-                        const currentDateISO = new Date(currentDate.getFullYear(), currentDate.getMonth(), i).toISOString().split('T')[0];
-                        if (currentDate >= new Date(2024, 8, 2) && (currentDate - new Date(2024, 8, 2)) % (repeatInterval * 24 * 60 * 60 * 1000) === 0) {
-                            addEvent(dayElement, 'Giornaliero');
-                        }
-                        if (currentDate >= new Date(2024, 8, 9) && (currentDate - new Date(2024, 8, 9)) % (repeatInterval * 24 * 60 * 60 * 1000) === 0) {
-                            addEvent(dayElement, 'Pomeriggio');
-                        }
-                        if (currentDate >= new Date(2024, 8, 16) && (currentDate - new Date(2024, 8, 16)) % (repeatInterval * 24 * 60 * 60 * 1000) === 0) {
-                            addEvent(dayElement, 'Mattino');
-                        }
-
-                        calendarEl.appendChild(dayElement);
-                        currentDate.setDate(currentDate.getDate() + 1);
+                    // Aggiungi eventi
+                    const currentDateISO = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), i).toISOString().split('T')[0];
+                    if (currentDateISO >= '2024-09-02' && (new Date(currentDateISO) - new Date('2024-09-02')) % (21 * 24 * 60 * 60 * 1000) === 0) {
+                        dayElement.classList.add('event-giornaliero');
+                        dayElement.setAttribute('data-event', 'Giornaliero');
+                    }
+                    if (currentDateISO >= '2024-09-09' && (new Date(currentDateISO) - new Date('2024-09-09')) % (21 * 24 * 60 * 60 * 1000) === 0) {
+                        dayElement.classList.add('event-pomeriggio');
+                        dayElement.setAttribute('data-event', 'Pomeriggio');
+                    }
+                    if (currentDateISO >= '2024-09-16' && (new Date(currentDateISO) - new Date('2024-09-16')) % (21 * 24 * 60 * 60 * 1000) === 0) {
+                        dayElement.classList.add('event-mattino');
+                        dayElement.setAttribute('data-event', 'Mattino');
                     }
 
-                    currentDate.setMonth(currentDate.getMonth() + 1);
-                    currentDate.setDate(1);
+                    calendarEl.appendChild(dayElement);
                 }
             }
 
-            generateCalendar();
+            function updateCalendar() {
+                renderCalendar();
+            }
+
+            prevMonthButton.addEventListener('click', function() {
+                currentMonth.setMonth(currentMonth.getMonth() - 1);
+                updateCalendar();
+            });
+
+            nextMonthButton.addEventListener('click', function() {
+                currentMonth.setMonth(currentMonth.getMonth() + 1);
+                updateCalendar();
+            });
+
+            updateCalendar();
         });
     </script>
 </body>
