@@ -42,6 +42,12 @@
         button:hover {
             background-color: #218838;
         }
+        #ferieButton {
+            background-color: #ff9800;
+        }
+        #ferieButton:hover {
+            background-color: #e68a00;
+        }
         #calendar {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
@@ -117,6 +123,7 @@
             <input type="number" step="0.1" id="orePausa" placeholder="Inserisci ore pausa (es. 0.5)">
 
             <button type="button" onclick="aggiungiOre()">Aggiungi Ore</button>
+            <button type="button" id="ferieButton" onclick="segnalaFerie()">Ferie</button>
         </form>
 
         <div class="total-hours" id="totOreMese">Totale ore del mese: 0</div>
@@ -215,14 +222,44 @@
 
             aggiornaTotaleOre();
             mostraDettagliGiorni();
-            generaCalendario();  // Aggiorna il calendario per segnare i giorni
+            generaCalendario();  // Aggiorna il calendario per segnare il giorno
         }
 
-        // Funzione per calcolare il totale delle ore
-        function aggiornaTotaleOre() {
+        // Funzione per segnare le ferie
+        function segnalaFerie() {
+            if (!selectedDay) {
+                alert("Seleziona un giorno per segnalare le ferie.");
+                return;
+            }
+
             const mese = parseInt(document.getElementById('mese').value);
             const anno = parseInt(document.getElementById('anno').value);
 
+            if (!oreGiorno[anno]) {
+                oreGiorno[anno] = {};
+            }
+            if (!oreGiorno[anno][mese]) {
+                oreGiorno[anno][mese] = {};
+            }
+
+            // Imposta le ore per le ferie
+            oreGiorno[anno][mese][selectedDay] = {
+                oreLavorate: 6.5,
+                oreStraordinario: 0,
+                orePausa: 0
+            };
+
+            localStorage.setItem('oreGiorno', JSON.stringify(oreGiorno));  // Salva in localStorage
+
+            aggiornaTotaleOre();
+            mostraDettagliGiorni();
+            generaCalendario();  // Aggiorna il calendario
+        }
+
+        // Funzione per aggiornare il totale delle ore del mese
+        function aggiornaTotaleOre() {
+            const mese = parseInt(document.getElementById('mese').value);
+            const anno = parseInt(document.getElementById('anno').value);
             let totaleOre = 0;
 
             if (oreGiorno[anno] && oreGiorno[anno][mese]) {
