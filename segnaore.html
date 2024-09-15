@@ -48,6 +48,12 @@
         #ferieButton:hover {
             background-color: #e68a00;
         }
+        #deleteButton {
+            background-color: #dc3545;
+        }
+        #deleteButton:hover {
+            background-color: #c82333;
+        }
         #calendar {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
@@ -72,6 +78,10 @@
             background-color: #28a745;
             color: white;
         }
+        .day.sunday, .day.festivity {
+            background-color: #dc3545;
+            color: white;
+        }
         .total-hours {
             background-color: #ffc107;
             padding: 15px;
@@ -86,6 +96,9 @@
             padding: 15px;
             border-radius: 5px;
             font-size: 14px;
+        }
+        .day-buttons {
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -123,14 +136,15 @@
             <label for="oreStraordinario">Ore Straordinario</label>
             <input type="number" step="0.1" id="oreStraordinario" placeholder="Inserisci ore straordinario (es. 2.5)">
 
-            <label for="orePausa">Ore Pausa</label>
-            <input type="number" step="0.1" id="orePausa" placeholder="Inserisci ore pausa (es. 0.5)">
-
-            <button type="button" onclick="aggiungiOre()">Aggiungi Ore</button>
-            <button type="button" id="ferieButton" onclick="segnalaFerie()">Ferie</button>
+            <div class="day-buttons">
+                <button type="button" onclick="aggiungiOre()">Aggiungi Ore</button>
+                <button type="button" id="ferieButton" onclick="segnalaFerie()">Ferie</button>
+                <button type="button" id="deleteButton" onclick="eliminaOre()">Elimina</button>
+            </div>
         </form>
 
         <div class="total-hours" id="totOreMese">Totale ore del mese: 0</div>
+        <div class="total-hours" id="totOreStraordinario">Totale ore straordinarie: 0</div>
 
         <div class="day-details" id="dettagliGiorniSegnati">Dettagli giorni segnati: Nessuno</div>
     </div>
@@ -160,6 +174,22 @@
             calendarDiv.innerHTML = '';  // Pulisce il calendario precedente
 
             const giorniNelMese = new Date(anno, mese + 1, 0).getDate();  // Ottieni i giorni nel mese
+            const primaGiorno = new Date(anno, mese, 1).getDay();  // Giorno della settimana del primo giorno del mese
+
+            // Giorni della settimana
+            const giorniSettimana = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'];
+            giorniSettimana.forEach(giorno => {
+                let dayHeader = document.createElement('div');
+                dayHeader.textContent = giorno;
+                dayHeader.style.fontWeight = 'bold';
+                calendarDiv.appendChild(dayHeader);
+            });
+
+            for (let i = 0; i < primaGiorno; i++) {
+                let emptyDiv = document.createElement('div');
+                calendarDiv.appendChild(emptyDiv);
+            }
+
             for (let i = 1; i <= giorniNelMese; i++) {
                 let dayDiv = document.createElement('div');
                 dayDiv.classList.add('day');
@@ -169,6 +199,26 @@
                 if (oreGiorno[anno] && oreGiorno[anno][mese] && oreGiorno[anno][mese][i]) {
                     dayDiv.classList.add('marked');
                 }
+
+                // Evidenzia domenica
+                const giornoSettimana = (primaGiorno + i - 1) % 7;
+                if (giornoSettimana === 6) {
+                    dayDiv.classList.add('sunday');
+                }
+
+                // Evidenzia festività
+                const festività = [
+                    { mese: 0, giorno: 1 }, // Capodanno
+                    { mese: 3, giorno: 25 }, // Festa della Liberazione
+                    { mese: 4, giorno: 1 }, // Festa del Lavoro
+                    { mese: 7, giorno: 15 }, // Ferragosto
+                    { mese: 11, giorno: 25 } // Natale
+                ];
+                festività.forEach(f => {
+                    if (f.mese === mese && f.giorno === i) {
+                        dayDiv.classList.add('festivity');
+                    }
+                });
 
                 dayDiv.onclick = () => selezionaGiorno(i, dayDiv);
                 calendarDiv.appendChild(dayDiv);
@@ -191,14 +241,12 @@
 
             document.getElementById('oreLavorate').value = '';
             document.getElementById('oreStraordinario').value = '';
-            document.getElementById('orePausa').value = '';
         }
 
         // Funzione per aggiungere ore
         function aggiungiOre() {
             const oreLavorate = parseFloat(document.getElementById('oreLavorate').value);
             const oreStraordinario = parseFloat(document.getElementById('oreStraordinario').value) || 0;
-            const orePausa = parseFloat(document.getElementById('orePausa').value) || 0;
 
             if (!selectedDay || isNaN(oreLavorate)) {
                 alert("Seleziona un giorno e inserisci le ore lavorate.");
@@ -218,8 +266,7 @@
 
             oreGiorno[anno][mese][selectedDay] = {
                 oreLavorate,
-                oreStraordinario,
-                orePausa
+                oreStraordinario
             };
 
             localStorage.setItem('oreGiorno', JSON.stringify(oreGiorno));  // Salva in localStorage
@@ -249,8 +296,7 @@
             // Imposta le ore per le ferie
             oreGiorno[anno][mese][selectedDay] = {
                 oreLavorate: 6.5,
-                oreStraordinario: 0,
-                orePausa: 0
+                oreStraordinario: 0
             };
 
             localStorage.setItem('oreGiorno', JSON.stringify(oreGiorno));  // Salva in localStorage
@@ -260,19 +306,50 @@
             generaCalendario();  // Aggiorna il calendario
         }
 
+        // Funzione per eliminare le ore segnate
+        function eliminaOre() {
+            if (!selectedDay) {
+                alert("Seleziona un giorno per eliminare le ore.");
+                return;
+            }
+
+            const mese = parseInt(document.getElementById('mese').value);
+            const anno = parseInt(document.getElementById('anno').value);
+
+            if (oreGiorno[anno] && oreGiorno[anno][mese] && oreGiorno[anno][mese][selectedDay]) {
+                delete oreGiorno[anno][mese][selectedDay];
+                if (Object.keys(oreGiorno[anno][mese]).length === 0) {
+                    delete oreGiorno[anno][mese];
+                }
+                if (Object.keys(oreGiorno[anno]).length === 0) {
+                    delete oreGiorno[anno];
+                }
+
+                localStorage.setItem('oreGiorno', JSON.stringify(oreGiorno));  // Salva in localStorage
+                aggiornaTotaleOre();
+                mostraDettagliGiorni();
+                generaCalendario();  // Aggiorna il calendario
+            } else {
+                alert("Nessun dato da eliminare per il giorno selezionato.");
+            }
+        }
+
         // Funzione per aggiornare il totale delle ore del mese
         function aggiornaTotaleOre() {
             const mese = parseInt(document.getElementById('mese').value);
             const anno = parseInt(document.getElementById('anno').value);
-            let totaleOre = 0;
+            let totaleOreLavorate = 0;
+            let totaleOreStraordinario = 0;
 
             if (oreGiorno[anno] && oreGiorno[anno][mese]) {
-                Object.values(oreGiorno[anno][mese]).forEach(({ oreLavorate, oreStraordinario, orePausa }) => {
-                    totaleOre += oreLavorate + oreStraordinario - orePausa;
+                Object.values(oreGiorno[anno][mese]).forEach(({ oreLavorate, oreStraordinario }) => {
+                    totaleOreLavorate += oreLavorate;
+                    totaleOreStraordinario += oreStraordinario;
                 });
             }
 
-            document.getElementById('totOreMese').textContent = `Totale ore del mese: ${totaleOre.toFixed(1)}`;
+            document.getElementById('totOreMese').textContent = `Totale ore del mese: ${totaleOreLavorate.toFixed(1)}`;
+            document.getElementById('totOreStraordinario').textContent = `Totale ore straordinarie: ${totaleOreStraordinario.toFixed(1)}`;
         }
 
         // Funzione per mostrare i dettagli dei giorni segnati
@@ -285,8 +362,8 @@
 
             if (oreGiorno[anno] && oreGiorno[anno][mese]) {
                 Object.keys(oreGiorno[anno][mese]).forEach(giorno => {
-                    const { oreLavorate, oreStraordinario, orePausa } = oreGiorno[anno][mese][giorno];
-                    dettagli += `Giorno ${giorno}: Lavorate: ${oreLavorate}, Straordinario: ${oreStraordinario}, Pausa: ${orePausa}<br>`;
+                    const { oreLavorate, oreStraordinario } = oreGiorno[anno][mese][giorno];
+                    dettagli += `Giorno ${giorno}: Lavorate: ${oreLavorate}, Straordinario: ${oreStraordinario}<br>`;
                 });
             } else {
                 dettagli = 'Nessun giorno segnato';
