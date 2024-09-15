@@ -21,6 +21,7 @@
             max-width: 100%;
             margin: auto;
             overflow-x: auto;
+            padding: 0 1rem;
         }
         .calendar {
             display: grid;
@@ -42,6 +43,7 @@
             padding: 0.5rem;
             min-height: 80px;
             position: relative;
+            box-sizing: border-box;
         }
         .calendar-day.sun {
             background-color: #E74C3C;
@@ -72,6 +74,9 @@
             text-overflow: ellipsis;
         }
         @media (max-width: 768px) {
+            .calendar {
+                grid-template-columns: repeat(7, 1fr);
+            }
             .calendar-day {
                 min-height: 60px;
                 font-size: 0.8rem;
@@ -83,6 +88,10 @@
             }
         }
         @media (max-width: 480px) {
+            .calendar {
+                grid-template-columns: repeat(7, 1fr);
+                gap: 0;
+            }
             .calendar-day {
                 min-height: 50px;
                 font-size: 0.7rem;
@@ -131,7 +140,7 @@
                     const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
                     const dayOfWeek = firstDayOfMonth.getDay();
                     const totalDays = lastDayOfMonth.getDate();
-                    
+
                     // Crea intestazioni per la settimana
                     if (currentDate.getDate() === 1) {
                         for (let i = 0; i < dayOfWeek; i++) {
