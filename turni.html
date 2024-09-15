@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turni</title>
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.css' rel='stylesheet' />
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #2E2E2E;
+            color: #EAEAEA;
+            margin: 0;
+            padding: 2rem;
+        }
+        h1 {
+            text-align: center;
+            color: #F1C40F;
+            margin-bottom: 1rem;
+        }
+        .calendar-container {
+            max-width: 1200px;
+            margin: auto;
+        }
+        .fc-daygrid-day-number {
+            color: #F1C40F; /* Colore del numero dei giorni */
+        }
+        .fc-event {
+            color: #FFF;
+            font-size: 0.85rem;
+        }
+        .fc-event-giornaliero {
+            background-color: #F1C40F; /* Colore giallo per il turno giornaliero */
+        }
+        .fc-event-pomeriggio {
+            background-color: #00BFFF; /* Colore celeste per il turno pomeridiano */
+        }
+        .fc-event-mattino {
+            background-color: #FFA500; /* Colore arancione per il turno mattutino */
+        }
+    </style>
+</head>
+<body>
+    <div class="calendar-container">
+        <h1>Calendario Turni</h1>
+        <div id='calendar'></div>
+    </div>
+
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.js'></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,dayGridWeek,dayGridDay'
+                },
+                initialView: 'dayGridMonth',
+                editable: true,
+                events: [
+                    // Turno Giornaliero
+                    {
+                        title: 'Turno Giornaliero',
+                        start: '2024-09-02',
+                        end: '2024-09-07',
+                        className: 'fc-event-giornaliero',
+                        extendedProps: {
+                            description: 'Dalle 6:00 alle 18:00. Si ripete ogni 3 settimane.'
+                        }
+                    },
+                    // Turno Pomeriggio
+                    {
+                        title: 'Turno Pomeriggio',
+                        start: '2024-09-09',
+                        end: '2024-09-13',
+                        className: 'fc-event-pomeriggio',
+                        extendedProps: {
+                            description: 'Dalle 13:00 alle 22:00. Si ripete ogni 3 settimane.'
+                        }
+                    },
+                    // Turno Mattino
+                    {
+                        title: 'Turno Mattino',
+                        start: '2024-09-16',
+                        end: '2024-09-21',
+                        className: 'fc-event-mattino',
+                        extendedProps: {
+                            description: 'Dalle 6:00 alle 13:00. Si ripete ogni 3 settimane.'
+                        }
+                    }
+                ],
+                eventContent: function(arg) {
+                    let customHtml = `<div class="fc-event-title">${arg.event.title}</div>`;
+                    if (arg.event.extendedProps.description) {
+                        customHtml += `<div class="fc-event-description">${arg.event.extendedProps.description}</div>`;
+                    }
+                    return { html: customHtml }
+                }
+            });
+
+            calendar.render();
+        });
+    </script>
+</body>
+</html>
