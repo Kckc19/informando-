@@ -1,368 +1,100 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Segnaore</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <title>Selezione Mese e Anno</title>
     <style>
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #2E2E2E;
-            color: #EAEAEA;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            overflow-x: hidden;
+            font-family: Arial, sans-serif;
         }
-        .container {
-            background-color: #3C3C3C;
+        .calendar-button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .popup {
+            display: none;
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
             border-radius: 10px;
-            padding: 1rem;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+        .overlay {
+            position: fixed;
+            left: 0;
+            top: 0;
             width: 100%;
-            max-width: 600px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-            box-sizing: border-box;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: none;
         }
-        h1 {
-            text-align: center;
-            margin-bottom: 1rem;
-            color: #F1C40F;
+        .popup select, .popup button {
+            margin: 10px 0;
         }
-        form {
-            margin-bottom: 1rem;
-        }
-        label {
-            display: block;
-            margin: 0.5rem 0;
-            color: #F1C40F;
-        }
-        input, select {
-            width: 100%;
-            padding: 0.75rem;
-            margin-bottom: 1rem;
+        .popup button {
+            background-color: #007bff;
+            color: white;
             border: none;
+            padding: 10px;
             border-radius: 5px;
-            background-color: #4A4A4A;
-            color: #EAEAEA;
-            box-sizing: border-box;
-        }
-        button {
-            width: 48%;
-            padding: 0.75rem;
-            background-color: #F1C40F;
-            color: #2E2E2E;
-            border: none;
-            border-radius: 5px;
-            font-size: 1rem;
             cursor: pointer;
-            margin-right: 2%;
-            box-sizing: border-box;
-        }
-        button:last-child {
-            margin-right: 0;
-        }
-        button:hover {
-            background-color: #D4AC0D;
-        }
-        #calendar {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-        .day {
-            background-color: #5D5D5D;
-            padding: 1rem;
-            border-radius: 5px;
-            text-align: center;
-            cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        }
-        .day:hover {
-            background-color: #6E6E6E;
-        }
-        .selected {
-            background-color: #F1C40F;
-            color: #2E2E2E;
-        }
-        .marked {
-            background-color: #27AE60;
-            color: #EAEAEA;
-        }
-        .totals, .marked-days {
-            text-align: center;
-            font-size: 1.2rem;
-            margin-top: 1rem;
-        }
-        .marked-days p, .totals p {
-            color: #F1C40F;
-        }
-        #selectedDayLabel {
-            margin-bottom: 1rem;
-        }
-
-        /* Media Queries per dispositivi mobili */
-        @media (max-width: 600px) {
-            button {
-                width: 100%;
-                margin-right: 0;
-                margin-bottom: 1rem;
-            }
-            #calendar {
-                grid-template-columns: repeat(4, 1fr);
-            }
-            .container {
-                padding: 1rem;
-                box-sizing: border-box;
-            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Segnaore</h1>
 
-        <!-- Selezione mese e anno -->
-        <form id="dateSelectionForm">
-            <label for="mese">Seleziona mese:</label>
-            <select id="mese" onchange="generaCalendario()">
-                <option value="0">Gennaio</option>
-                <option value="1">Febbraio</option>
-                <option value="2">Marzo</option>
-                <option value="3">Aprile</option>
-                <option value="4">Maggio</option>
-                <option value="5">Giugno</option>
-                <option value="6">Luglio</option>
-                <option value="7">Agosto</option>
-                <option value="8">Settembre</option>
-                <option value="9">Ottobre</option>
-                <option value="10">Novembre</option>
-                <option value="11">Dicembre</option>
+    <button class="calendar-button" onclick="openPopup()">Seleziona Mese e Anno</button>
+
+    <div class="overlay" id="overlay"></div>
+    <div class="popup" id="popup">
+        <h2>Seleziona Mese e Anno</h2>
+        <form id="calendar-form">
+            <label for="month">Mese:</label>
+            <select id="month">
+                <option value="01">Gennaio</option>
+                <option value="02">Febbraio</option>
+                <!-- Aggiungi tutti i mesi -->
             </select>
-
-            <label for="anno">Seleziona anno:</label>
-            <select id="anno" onchange="generaCalendario()">
-                <script>
-                    const currentYear = new Date().getFullYear();
-                    for (let year = currentYear - 5; year <= currentYear + 5; year++) {
-                        document.write(`<option value="${year}">${year}</option>`);
-                    }
-                </script>
+            <label for="year">Anno:</label>
+            <select id="year">
+                <option value="2024">2024</option>
+                <option value="2023">2023</option>
+                <!-- Aggiungi gli anni necessari -->
             </select>
+            <button type="button" onclick="confirmSelection()">Conferma</button>
+            <button type="button" onclick="closePopup()">Annulla</button>
         </form>
-
-        <!-- Calendario -->
-        <div id="calendar"></div>
-
-        <!-- Form inserimento ore -->
-        <form id="hoursForm" style="display:none;">
-            <p id="selectedDayLabel">Giorno selezionato: Nessuno</p>
-            <label for="oreLavorate">Ore lavorate (obbligatorio):</label>
-            <input type="number" step="0.1" id="oreLavorate" required>
-            
-            <label for="orePausa">Ore pausa:</label>
-            <input type="number" step="0.1" id="orePausa">
-
-            <label for="oreStraordinarie">Ore straordinarie:</label>
-            <input type="number" step="0.1" id="oreStraordinarie">
-
-            <button type="button" onclick="aggiungiOre()">Aggiungi Ore</button>
-            <button type="button" onclick="segnalaFerie()">Segnala Ferie</button>
-        </form>
-
-        <!-- Sezione calcolo totali e giorni segnati -->
-        <div class="totals">
-            <p id="totOreMese">Totale ore mese: 0</p>
-        </div>
-        <div class="marked-days">
-            <p id="giorniSegnati">Giorni segnati: Nessuno</p>
-        </div>
     </div>
 
     <script>
-        const oreGiorno = JSON.parse(localStorage.getItem('oreGiorno')) || {};  // Carica i dati salvati
-        let oreTotali = 0;
-        let oreStraordinarioTotali = 0;
-        let orePausaTotali = 0;
-        let selectedDay = null;
-
-        // Funzione per generare il calendario in base al mese e anno selezionato
-        function generaCalendario() {
-            const mese = parseInt(document.getElementById('mese').value);
-            const anno = parseInt(document.getElementById('anno').value);
-
-            // Cancella il contenuto del calendario precedente
-            const calendarDiv = document.getElementById('calendar');
-            calendarDiv.innerHTML = '';
-
-            // Ottieni il numero di giorni del mese selezionato
-            const giorniNelMese = new Date(anno, mese + 1, 0).getDate();
-
-            // Crea i giorni nel calendario
-            for (let i = 1; i <= giorniNelMese; i++) {
-                const dayDiv = document.createElement('div');
-                dayDiv.classList.add('day');
-                dayDiv.textContent = i;
-
-                // Aggiungi classe "marked" se il giorno è segnato
-                if (oreGiorno[anno] && oreGiorno[anno][mese] && oreGiorno[anno][mese][i]) {
-                    dayDiv.classList.add('marked');
-                }
-
-                dayDiv.addEventListener('click', () => selectDay(i));
-                calendarDiv.appendChild(dayDiv);
-            }
-
-            document.getElementById('hoursForm').style.display = 'block';
-            calcolaTotaleMese();
-            aggiornaGiorniSegnati();
+        function openPopup() {
+            document.getElementById('popup').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
         }
 
-        function selectDay(day) {
-            if (selectedDay) {
-                selectedDay.classList.remove('selected');
-            }
-            selectedDay = document.querySelector(`#calendar .day:nth-child(${day})`);
-            selectedDay.classList.add('selected');
-            document.getElementById('selectedDayLabel').textContent = `Giorno selezionato: ${day}`;
-            mostraOreGiorno(day);
+        function closePopup() {
+            document.getElementById('popup').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
         }
 
-        function mostraOreGiorno(day) {
-            const anno = parseInt(document.getElementById('anno').value);
-            const mese = parseInt(document.getElementById('mese').value);
-            const oreDelGiorno = oreGiorno[anno] && oreGiorno[anno][mese] && oreGiorno[anno][mese][day] || {};
-
-            document.getElementById('oreLavorate').value = oreDelGiorno.oreLavorate || '';
-            document.getElementById('orePausa').value = oreDelGiorno.orePausa || '';
-            document.getElementById('oreStraordinarie').value = oreDelGiorno.oreStraordinarie || '';
+        function confirmSelection() {
+            const month = document.getElementById('month').value;
+            const year = document.getElementById('year').value;
+            // Fai qualcosa con la selezione, come aggiornare la pagina o fare una richiesta
+            console.log(`Mese: ${month}, Anno: ${year}`);
+            closePopup();
         }
-
-        function aggiungiOre() {
-            const oreLavorate = parseFloat(document.getElementById('oreLavorate').value) || 0;
-            const orePausa = parseFloat(document.getElementById('orePausa').value) || 0;
-            const oreStraordinarie = parseFloat(document.getElementById('oreStraordinarie').value) || 0;
-
-            if (!selectedDay) {
-                alert('Seleziona un giorno prima di inserire le ore.');
-                return;
-            }
-
-            const giorno = parseInt(selectedDay.textContent);
-            const anno = parseInt(document.getElementById('anno').value);
-            const mese = parseInt(document.getElementById('mese').value);
-
-            // Salva le ore nel giorno selezionato
-            if (!oreGiorno[anno]) {
-                oreGiorno[anno] = {};
-            }
-            if (!oreGiorno[anno][mese]) {
-                oreGiorno[anno][mese] = {};
-            }
-
-            oreGiorno[anno][mese][giorno] = {
-                oreLavorate,
-                orePausa,
-                oreStraordinarie
-            };
-
-            // Salva nel localStorage
-            localStorage.setItem('oreGiorno', JSON.stringify(oreGiorno));
-
-            // Aggiorna i totali
-            calcolaTotaleMese();
-            aggiornaGiorniSegnati();
-            resetForm();
-            generaCalendario(); // Rende visibile l'aggiornamento sul calendario
-        }
-
-        function segnalaFerie() {
-            const oreLavorate = 6.5;
-            const orePausa = 0;
-            const oreStraordinarie = 0;
-
-            if (!selectedDay) {
-                alert('Seleziona un giorno prima di inserire le ore.');
-                return;
-            }
-
-            const giorno = parseInt(selectedDay.textContent);
-            const anno = parseInt(document.getElementById('anno').value);
-            const mese = parseInt(document.getElementById('mese').value);
-
-            // Salva le ore nel giorno selezionato
-            if (!oreGiorno[anno]) {
-                oreGiorno[anno] = {};
-            }
-            if (!oreGiorno[anno][mese]) {
-                oreGiorno[anno][mese] = {};
-            }
-
-            oreGiorno[anno][mese][giorno] = {
-                oreLavorate,
-                orePausa,
-                oreStraordinarie
-            };
-
-            // Salva nel localStorage
-            localStorage.setItem('oreGiorno', JSON.stringify(oreGiorno));
-
-            // Aggiorna i totali
-            calcolaTotaleMese();
-            aggiornaGiorniSegnati();
-            resetForm();
-            generaCalendario(); // Rende visibile l'aggiornamento sul calendario
-        }
-
-        function calcolaTotaleMese() {
-            const mese = parseInt(document.getElementById('mese').value);
-            const anno = parseInt(document.getElementById('anno').value);
-            const giorniDelMese = oreGiorno[anno] && oreGiorno[anno][mese] ? oreGiorno[anno][mese] : {};
-
-            oreTotali = 0;
-            oreStraordinarioTotali = 0;
-            orePausaTotali = 0;
-
-            for (const giorno in giorniDelMese) {
-                if (giorniDelMese.hasOwnProperty(giorno)) {
-                    const { oreLavorate, orePausa, oreStraordinarie } = giorniDelMese[giorno];
-                    oreTotali += oreLavorate;
-                    orePausaTotali += orePausa;
-                    oreStraordinarioTotali += oreStraordinarie;
-                }
-            }
-
-            const totaleOreMese = oreTotali + oreStraordinarioTotali - orePausaTotali;
-            document.getElementById('totOreMese').textContent = `Totale ore mese: ${totaleOreMese.toFixed(1)}`;
-        }
-
-        function aggiornaGiorniSegnati() {
-            const mese = parseInt(document.getElementById('mese').value);
-            const anno = parseInt(document.getElementById('anno').value);
-            const giorniDelMese = oreGiorno[anno] && oreGiorno[anno][mese] ? oreGiorno[anno][mese] : {};
-
-            const giorniSegnati = Object.keys(giorniDelMese)
-                .map(giorno => `Giorno ${giorno}: Ore lavorate: ${giorniDelMese[giorno].oreLavorate.toFixed(1)}, Ore pausa: ${giorniDelMese[giorno].orePausa.toFixed(1)}, Ore straordinarie: ${giorniDelMese[giorno].oreStraordinarie.toFixed(1)}`)
-                .join('<br>');
-
-            document.getElementById('giorniSegnati').innerHTML = giorniSegnati || 'Giorni segnati: Nessuno';
-        }
-
-        function resetForm() {
-            document.getElementById('hoursForm').reset();
-            document.getElementById('selectedDayLabel').textContent = "Giorno selezionato: Nessuno";
-            if (selectedDay) {
-                selectedDay.classList.remove('selected');
-                selectedDay = null;
-            }
-        }
-
-        // Inizializza il calendario all'apertura della pagina
-        generaCalendario();
     </script>
+
 </body>
 </html>
