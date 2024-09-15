@@ -42,6 +42,10 @@
         .calendar-controls button:hover {
             background: #F39C12;
         }
+        .calendar-month {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
         .calendar {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
@@ -126,8 +130,9 @@
 <body>
     <div class="calendar-container">
         <h1>Calendario Turni</h1>
-        <div class="calendar-controls">
+        <div class="calendar-header">
             <button id="prev-month">« Mese Precedente</button>
+            <div class="calendar-month" id="month-year"></div>
             <button id="next-month">Mese Successivo »</button>
         </div>
         <div class="calendar" id="calendar">
@@ -147,6 +152,7 @@
             const calendarEl = document.getElementById('calendar');
             const prevMonthButton = document.getElementById('prev-month');
             const nextMonthButton = document.getElementById('next-month');
+            const monthYearEl = document.getElementById('month-year');
 
             let currentMonth = new Date();
             currentMonth.setDate(1); // Inizia dal primo giorno del mese
@@ -192,21 +198,27 @@
 
                     // Aggiungi eventi
                     const currentDateISO = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), i).toISOString().split('T')[0];
-                    if (currentDateISO >= '2024-09-02' && (new Date(currentDateISO) - new Date('2024-09-02')) % (21 * 24 * 60 * 60 * 1000) === 0) {
+                    const daysSinceStart = (new Date(currentDateISO) - new Date('2024-09-02')) / (24 * 60 * 60 * 1000);
+                    
+                    if (daysSinceStart % 21 === 0) {
                         dayElement.classList.add('event-giornaliero');
                         dayElement.setAttribute('data-event', 'Giornaliero');
                     }
-                    if (currentDateISO >= '2024-09-09' && (new Date(currentDateISO) - new Date('2024-09-09')) % (21 * 24 * 60 * 60 * 1000) === 0) {
+                    if (daysSinceStart % 21 === 7) {
                         dayElement.classList.add('event-pomeriggio');
                         dayElement.setAttribute('data-event', 'Pomeriggio');
                     }
-                    if (currentDateISO >= '2024-09-16' && (new Date(currentDateISO) - new Date('2024-09-16')) % (21 * 24 * 60 * 60 * 1000) === 0) {
+                    if (daysSinceStart % 21 === 14) {
                         dayElement.classList.add('event-mattino');
                         dayElement.setAttribute('data-event', 'Mattino');
                     }
 
                     calendarEl.appendChild(dayElement);
                 }
+
+                // Aggiorna il mese e l'anno visualizzati
+                const monthNames = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"];
+                monthYearEl.textContent = `${monthNames[currentMonth.getMonth()]} ${currentMonth.getFullYear()}`;
             }
 
             function updateCalendar() {
