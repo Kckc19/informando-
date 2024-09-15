@@ -187,7 +187,7 @@
                 // Aggiungi giorni del mese
                 for (let i = 1; i <= totalDays; i++) {
                     const dayElement = document.createElement('div');
-                    const dayClass = currentMonth.getDay() === 0 ? 'sun' : '';
+                    const dayClass = (new Date(currentMonth.getFullYear(), currentMonth.getMonth(), i).getDay() === 0) ? 'sun' : '';
                     dayElement.className = `calendar-day ${dayClass}`;
                     dayElement.textContent = i;
 
