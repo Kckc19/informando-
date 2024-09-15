@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calendario Turni</title>
-    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.css' rel='stylesheet' />
     <style>
         body {
             font-family: 'Roboto', sans-serif;
@@ -19,158 +18,165 @@
             margin-bottom: 1rem;
         }
         .calendar-container {
-            max-width: 1200px;
+            max-width: 100%;
             margin: auto;
+            overflow-x: auto;
         }
-        .fc-daygrid-day-number {
-            color: #EAEAEA; /* Colore del numero dei giorni */
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background-color: #333;
         }
-        .fc-daygrid-day-top {
-            color: #EAEAEA; /* Colore del testo del giorno della settimana */
+        .calendar-header {
+            display: contents;
+            background-color: #444;
+            color: #EAEAEA;
+            text-align: center;
+            padding: 0.5rem;
+            font-weight: bold;
         }
-        .fc-day-sun {
-            background-color: #E74C3C !important; /* Colore rosso per le domeniche */
-            color: white !important;
-        }
-        .fc-event-giornaliero {
-            background-color: #F1C40F !important; /* Colore giallo per il turno giornaliero */
-        }
-        .fc-event-pomeriggio {
-            background-color: #00BFFF !important; /* Colore celeste per il turno pomeridiano */
-        }
-        .fc-event-mattino {
-            background-color: #FFA500 !important; /* Colore arancione per il turno mattutino */
-        }
-        .fc-daygrid-day-event {
-            border-radius: 0 !important; /* Rimuovi il bordo */
-        }
-        .fc-daygrid-day-content {
+        .calendar-day {
+            background-color: #555;
+            color: #EAEAEA;
+            text-align: center;
+            padding: 0.5rem;
+            min-height: 80px;
             position: relative;
         }
-        .fc-daygrid-day-content::after {
+        .calendar-day.sun {
+            background-color: #E74C3C;
+            color: white;
+        }
+        .calendar-day.event-giornaliero {
+            background-color: #F1C40F;
+        }
+        .calendar-day.event-pomeriggio {
+            background-color: #00BFFF;
+        }
+        .calendar-day.event-mattino {
+            background-color: #FFA500;
+        }
+        .calendar-day::after {
             content: attr(data-event);
             position: absolute;
-            top: 0;
+            bottom: 0;
             left: 0;
             width: 100%;
             text-align: center;
-            background: rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.5);
             color: #EAEAEA;
             padding: 0.2rem;
-            border-radius: 0.3rem;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        @media (max-width: 768px) {
+            .calendar {
+                grid-template-columns: repeat(7, 1fr);
+            }
+            .calendar-day {
+                min-height: 60px;
+                font-size: 0.8rem;
+                padding: 0.3rem;
+            }
+            .calendar-day::after {
+                font-size: 0.7rem;
+                padding: 0.1rem;
+            }
+        }
+        @media (max-width: 480px) {
+            .calendar {
+                grid-template-columns: repeat(7, 1fr);
+                gap: 0;
+            }
+            .calendar-day {
+                min-height: 50px;
+                font-size: 0.7rem;
+                padding: 0.2rem;
+            }
+            .calendar-day::after {
+                font-size: 0.6rem;
+                padding: 0.1rem;
+            }
         }
     </style>
 </head>
 <body>
     <div class="calendar-container">
         <h1>Calendario Turni</h1>
-        <div id='calendar'></div>
+        <div class="calendar" id="calendar">
+            <div class="calendar-header">Lun</div>
+            <div class="calendar-header">Mar</div>
+            <div class="calendar-header">Mer</div>
+            <div class="calendar-header">Gio</div>
+            <div class="calendar-header">Ven</div>
+            <div class="calendar-header">Sab</div>
+            <div class="calendar-header">Dom</div>
+            <!-- Le caselle dei giorni saranno inserite dinamicamente dallo script -->
+        </div>
     </div>
 
-    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.js'></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            var calendarEl = document.getElementById('calendar');
-
-            var calendar = new FullCalendar.Calendar(calendarEl, {
-                headerToolbar: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'dayGridMonth,dayGridWeek,dayGridDay'
-                },
-                initialView: 'dayGridMonth',
-                locale: 'it', // Imposta la localizzazione su italiano
-                dayHeaderFormat: { weekday: 'long' }, // Usa il formato del giorno della settimana lungo
-                editable: false, // Disabilita la modifica degli eventi
-                events: generateEvents(),
-                dayCellDidMount: function(info) {
-                    const date = info.date;
-                    // Rimuove i turni dalla domenica
-                    if (date.getDay() === 0) {
-                        info.el.classList.add('fc-day-sun');
-                        info.el.removeAttribute('data-event'); // Rimuove i turni dalle domeniche
-                    } else {
-                        // Aggiungi le etichette dei turni
-                        const events = calendar.getEvents().filter(event => {
-                            const eventDate = new Date(event.start);
-                            return eventDate.toDateString() === date.toDateString();
-                        });
-                        if (events.length) {
-                            info.el.setAttribute('data-event', events.map(e => e.title).join(', '));
-                        }
-                    }
-                },
-                validRange: {
-                    start: '2024-09-01',
-                    end: '2025-12-31' // Imposta l'intervallo fino a dicembre 2025
-                }
-            });
-
-            calendar.render();
-        });
-
-        function generateEvents() {
-            const events = [];
-            const startDate = new Date(2024, 8, 2); // 2 settembre 2024
+            const calendarEl = document.getElementById('calendar');
+            const daysInMonth = 31; // Numero massimo di giorni in un mese
+            const startDate = new Date(2024, 8, 1); // 1 settembre 2024
+            const endDate = new Date(2025, 11, 31); // 31 dicembre 2025
             const turnDuration = 7; // Durata di un turno in giorni
             const repeatInterval = 21; // Intervallo di ripetizione in giorni
 
-            // Turno Giornaliero
-            addRepeatingEvent(events, 'Giornaliero', 'fc-event-giornaliero', startDate, turnDuration, repeatInterval);
+            let currentDate = new Date(startDate);
 
-            // Turno Pomeridiano (dal lunedì al venerdì)
-            const pmStartDate = new Date(2024, 8, 9); // 9 settembre 2024
-            addRepeatingEvent(events, 'Pomeriggio', 'fc-event-pomeriggio', pmStartDate, 5, repeatInterval, { weekdays: [1, 2, 3, 4, 5] });
+            function addEvent(dayElement, title) {
+                dayElement.setAttribute('data-event', title);
+                dayElement.classList.add(`event-${title.toLowerCase()}`);
+            }
 
-            // Turno Mattino
-            const amStartDate = new Date(2024, 8, 16); // 16 settembre 2024
-            addRepeatingEvent(events, 'Mattino', 'fc-event-mattino', amStartDate, 7, repeatInterval);
-
-            return events;
-        }
-
-        function addRepeatingEvent(events, title, className, startDate, duration, interval, options = {}) {
-            for (let i = 0; i < 16; i++) { // Limita a 16 mesi di eventi (per estendere fino a dicembre 2025)
-                const start = new Date(startDate);
-                start.setDate(start.getDate() + (i * interval));
-                const end = new Date(start);
-                end.setDate(end.getDate() + duration - 1);
-
-                // Escludi le domeniche per gli eventi
-                if (options.weekdays) {
-                    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-                        if (d.getDay() === 0 || !options.weekdays.includes(d.getDay())) {
-                            continue;
+            function generateCalendar() {
+                while (currentDate <= endDate) {
+                    const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+                    const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+                    const dayOfWeek = firstDayOfMonth.getDay();
+                    const totalDays = lastDayOfMonth.getDate();
+                    
+                    for (let i = 0; i < 7; i++) {
+                        if (currentDate.getMonth() !== startDate.getMonth() && i === 0) {
+                            currentDate.setDate(1);
+                            break;
                         }
-                        events.push({
-                            title: title,
-                            start: d.toISOString().split('T')[0],
-                            end: d.toISOString().split('T')[0],
-                            className: className,
-                            extendedProps: {
-                                description: `Inizio: ${start.toLocaleDateString()} - Fine: ${end.toLocaleDateString()}.`
+                        if (i === 0 && currentDate.getDate() === 1) {
+                            for (let j = 0; j < dayOfWeek; j++) {
+                                calendarEl.innerHTML += '<div class="calendar-day"></div>';
                             }
-                        });
-                    }
-                } else {
-                    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-                        if (d.getDay() === 0) {
-                            continue;
                         }
-                        events.push({
-                            title: title,
-                            start: d.toISOString().split('T')[0],
-                            end: d.toISOString().split('T')[0],
-                            className: className,
-                            extendedProps: {
-                                description: `Inizio: ${start.toLocaleDateString()} - Fine: ${end.toLocaleDateString()}.`
+                        if (currentDate.getDate() <= totalDays) {
+                            const dayClass = currentDate.getDay() === 0 ? 'sun' : '';
+                            const dayElement = document.createElement('div');
+                            dayElement.className = `calendar-day ${dayClass}`;
+                            dayElement.textContent = currentDate.getDate();
+                            calendarEl.appendChild(dayElement);
+
+                            // Aggiungi eventi
+                            if (currentDate >= new Date(2024, 8, 2) && (currentDate - new Date(2024, 8, 2)) % (repeatInterval * 24 * 60 * 60 * 1000) === 0) {
+                                addEvent(dayElement, 'Giornaliero');
                             }
-                        });
+                            if (currentDate >= new Date(2024, 8, 9) && (currentDate - new Date(2024, 8, 9)) % (repeatInterval * 24 * 60 * 60 * 1000) === 0) {
+                                addEvent(dayElement, 'Pomeriggio');
+                            }
+                            if (currentDate >= new Date(2024, 8, 16) && (currentDate - new Date(2024, 8, 16)) % (repeatInterval * 24 * 60 * 60 * 1000) === 0) {
+                                addEvent(dayElement, 'Mattino');
+                            }
+                            
+                            currentDate.setDate(currentDate.getDate() + 1);
+                        }
                     }
                 }
             }
-        }
+
+            generateCalendar();
+        });
     </script>
 </body>
 </html>
