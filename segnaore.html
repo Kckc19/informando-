@@ -100,6 +100,21 @@
         #selectedDayLabel {
             margin-bottom: 1rem;
         }
+
+        /* Media Queries per dispositivi mobili */
+        @media (max-width: 600px) {
+            button {
+                width: 100%;
+                margin-right: 0;
+                margin-bottom: 1rem;
+            }
+            .container {
+                padding: 1rem;
+            }
+            #calendar {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
     </style>
 </head>
 <body>
