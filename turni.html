@@ -25,6 +25,9 @@
         .fc-daygrid-day-number {
             color: #EAEAEA; /* Colore del numero dei giorni */
         }
+        .fc-daygrid-day-top {
+            color: #EAEAEA; /* Colore del testo del giorno della settimana */
+        }
         .fc-day-sun {
             background-color: #E74C3C !important; /* Colore rosso per le domeniche */
             color: white !important;
@@ -79,11 +82,11 @@
                 initialView: 'dayGridMonth',
                 locale: 'it', // Imposta la localizzazione su italiano
                 dayHeaderFormat: { weekday: 'long' }, // Usa il formato del giorno della settimana lungo
-                editable: true,
+                editable: false, // Disabilita la modifica degli eventi
                 events: generateEvents(),
                 dayCellDidMount: function(info) {
-                    // Evidenzia le domeniche
                     const date = info.date;
+                    // Rimuove i turni dalla domenica
                     if (date.getDay() === 0) {
                         info.el.classList.add('fc-day-sun');
                         info.el.removeAttribute('data-event'); // Rimuove i turni dalle domeniche
