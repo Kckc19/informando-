@@ -95,7 +95,22 @@
             background-color: #f8f9fa;
             padding: 15px;
             border-radius: 5px;
-            font-size: 14px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
         }
         .day-buttons {
             margin-top: 10px;
@@ -146,7 +161,20 @@
         <div class="total-hours" id="totOreMese">Totale ore del mese: 0</div>
         <div class="total-hours" id="totOreStraordinario">Totale ore straordinarie: 0</div>
 
-        <div class="day-details" id="dettagliGiorniSegnati">Dettagli giorni segnati: Nessuno</div>
+        <div class="day-details" id="dettagliGiorniSegnati">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Giorno</th>
+                        <th>Ore Lavorate</th>
+                        <th>Ore Straordinario</th>
+                    </tr>
+                </thead>
+                <tbody id="dayDetailsTableBody">
+                    <!-- Dettagli dei giorni segnati verranno inseriti qui -->
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <script>
@@ -209,11 +237,9 @@
 
                 // Evidenzia festività
                 const festività = [
-                    { mese: 0, giorno: 1 }, // Capodanno
-                    { mese: 3, giorno: 25 }, // Festa della Liberazione
-                    { mese: 4, giorno: 1 }, // Festa del Lavoro
-                    { mese: 7, giorno: 15 }, // Ferragosto
-                    { mese: 11, giorno: 25 } // Natale
+                    { mese: 0, giorno: 1 },   // 1 Gennaio
+                    { mese: 3, giorno: 25 },  // 25 Aprile
+                    { mese: 11, giorno: 25 }  // 25 Dicembre
                 ];
                 festività.forEach(f => {
                     if (f.mese === mese && f.giorno === i) {
@@ -221,7 +247,7 @@
                     }
                 });
 
-                // Imposta il click per selezionare il giorno
+                // Aggiungi l'evento di clic per selezionare il giorno
                 dayDiv.onclick = () => selezionaGiorno(i, dayDiv);
                 calendarDiv.appendChild(dayDiv);
             }
@@ -358,20 +384,31 @@
         function mostraDettagliGiorni() {
             const mese = parseInt(document.getElementById('mese').value);
             const anno = parseInt(document.getElementById('anno').value);
-            const dettagliDiv = document.getElementById('dettagliGiorniSegnati');
+            const dettagliTbody = document.getElementById('dayDetailsTableBody');
 
             let dettagli = '';
 
             if (oreGiorno[anno] && oreGiorno[anno][mese]) {
+                dettagli = '';
                 Object.keys(oreGiorno[anno][mese]).forEach(giorno => {
                     const { oreLavorate, oreStraordinario } = oreGiorno[anno][mese][giorno];
-                    dettagli += `Giorno ${giorno}: Lavorate: ${oreLavorate}, Straordinario: ${oreStraordinario}<br>`;
+                    dettagli += `
+                        <tr>
+                            <td>${giorno}</td>
+                            <td>${oreLavorate.toFixed(1)}</td>
+                            <td>${oreStraordinario.toFixed(1)}</td>
+                        </tr>
+                    `;
                 });
             } else {
-                dettagli = 'Nessun giorno segnato';
+                dettagli = `
+                    <tr>
+                        <td colspan="3">Nessun giorno segnato</td>
+                    </tr>
+                `;
             }
 
-            dettagliDiv.innerHTML = dettagli;
+            dettagliTbody.innerHTML = dettagli;
         }
 
         // Inizializza il calendario
