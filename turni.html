@@ -25,18 +25,14 @@
         .fc-daygrid-day-number {
             color: #F1C40F; /* Colore del numero dei giorni */
         }
-        .fc-event {
-            color: #FFF;
-            font-size: 0.85rem;
-        }
         .fc-event-giornaliero {
-            background-color: #F1C40F; /* Colore giallo per il turno giornaliero */
+            background-color: #F1C40F !important; /* Colore giallo per il turno giornaliero */
         }
         .fc-event-pomeriggio {
-            background-color: #00BFFF; /* Colore celeste per il turno pomeridiano */
+            background-color: #00BFFF !important; /* Colore celeste per il turno pomeridiano */
         }
         .fc-event-mattino {
-            background-color: #FFA500; /* Colore arancione per il turno mattutino */
+            background-color: #FFA500 !important; /* Colore arancione per il turno mattutino */
         }
     </style>
 </head>
@@ -61,11 +57,7 @@
                 editable: true,
                 events: generateEvents(),
                 eventContent: function(arg) {
-                    let customHtml = `<div class="fc-event-title">${arg.event.title}</div>`;
-                    if (arg.event.extendedProps.description) {
-                        customHtml += `<div class="fc-event-description">${arg.event.extendedProps.description}</div>`;
-                    }
-                    return { html: customHtml }
+                    return { html: `<div class="fc-event-title">${arg.event.title}</div>` };
                 }
             });
 
@@ -80,21 +72,21 @@
             const repeatInterval = 21; // Intervallo di ripetizione in giorni
 
             // Turno Giornaliero
-            addRepeatingEvent(events, 'Turno Giornaliero', '#F1C40F', startDate, turnDuration, repeatInterval);
+            addRepeatingEvent(events, 'Giornaliero', 'fc-event-giornaliero', startDate, turnDuration, repeatInterval);
 
             // Turno Pomeriggio
             const pmStartDate = new Date(2024, 8, 9); // 9 settembre 2024
-            addRepeatingEvent(events, 'Turno Pomeriggio', '#00BFFF', pmStartDate, turnDuration, repeatInterval);
+            addRepeatingEvent(events, 'Pomeriggio', 'fc-event-pomeriggio', pmStartDate, 5, repeatInterval);
 
             // Turno Mattino
             const amStartDate = new Date(2024, 8, 16); // 16 settembre 2024
-            addRepeatingEvent(events, 'Turno Mattino', '#FFA500', amStartDate, turnDuration, repeatInterval);
+            addRepeatingEvent(events, 'Mattino', 'fc-event-mattino', amStartDate, 7, repeatInterval);
 
             return events;
         }
 
         // Funzione per aggiungere eventi ripetitivi
-        function addRepeatingEvent(events, title, color, startDate, duration, interval) {
+        function addRepeatingEvent(events, title, className, startDate, duration, interval) {
             for (let i = 0; i < 12; i++) { // Limita a 12 mesi di eventi
                 const start = new Date(startDate);
                 start.setDate(start.getDate() + (i * interval));
@@ -105,9 +97,9 @@
                     title: title,
                     start: start.toISOString().split('T')[0],
                     end: end.toISOString().split('T')[0],
-                    className: `fc-event-${title.toLowerCase().replace(' ', '-')}`,
+                    className: className,
                     extendedProps: {
-                        description: `Inizio: ${start.toLocaleDateString()} - Fine: ${end.toLocaleDateString()}. Si ripete ogni 3 settimane.`
+                        description: `Inizio: ${start.toLocaleDateString()} - Fine: ${end.toLocaleDateString()}.`
                     }
                 });
             }
