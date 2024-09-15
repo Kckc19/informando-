@@ -29,29 +29,32 @@
         .calendar th {
             background-color: #f4f4f4;
         }
-        .red {
-            color: red;
-            font-weight: bold;
-        }
         .header {
             background-color: #dcdcdc;
             font-weight: bold;
         }
-        .morning, .afternoon {
-            background-color: #e0e0e0;
-        }
         .holiday {
             background-color: #ffdddd;
+        }
+        .morning, .afternoon {
+            background-color: #e0e0e0;
         }
         .nav-buttons {
             text-align: center;
             margin: 20px 0;
         }
+        .month-name {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .highlight {
+            background-color: yellow;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Gestione Turni</h1>
         <div class="nav-buttons">
             <button onclick="changeMonth(-1)">Mese Precedente</button>
             <button onclick="changeMonth(1)">Mese Successivo</button>
@@ -61,7 +64,6 @@
 
     <script>
         const daysOfWeek = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'];
-        const holidays = ['2024-09-08', '2024-09-15', '2024-09-29']; // Esempio di festivi
 
         let currentMonth = new Date(2024, 8); // Settembre 2024
 
@@ -69,8 +71,9 @@
             const firstDay = new Date(year, month, 1);
             const lastDay = new Date(year, month + 1, 0);
             const daysInMonth = lastDay.getDate();
-
-            let calendarHTML = `<table class="calendar">
+            const monthName = firstDay.toLocaleString('it-IT', { month: 'long' });
+            const calendarHTML = `<div class="month-name">${monthName} ${year}</div>
+                <table class="calendar">
                 <thead>
                     <tr class="header">`;
 
@@ -88,13 +91,13 @@
             // Generate days of the month
             for (let day = 1; day <= daysInMonth; day++) {
                 const currentDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                const isHoliday = holidays.includes(currentDate);
                 const isSunday = new Date(year, month, day).getDay() === 0;
+                const isWeekend = (day % 7 === 1) || (day % 7 === 0); // Domenica
 
-                calendarHTML += `<td class="${isHoliday ? 'red' : (isSunday ? 'holiday' : '')}">
+                calendarHTML += `<td class="${isSunday ? 'holiday' : ''}">
                     ${day}
-                    <br>Mattino: ${isHoliday ? 'Festa' : 'Turno'}
-                    <br>Pomeriggio: ${isHoliday ? 'Festa' : (day >= 1 && day <= 5 ? 'Turno' : '')}
+                    <br>Mattino
+                    <br>Pomeriggio
                 </td>`;
 
                 if (new Date(year, month, day).getDay() === 6) {
