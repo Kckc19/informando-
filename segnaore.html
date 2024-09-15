@@ -62,7 +62,7 @@
         }
         .day {
             padding: 15px;
-            background-color: transparent;  /* Non colorato di default */
+            background-color: transparent;
             color: #333;
             text-align: center;
             border: 1px solid #ccc;
@@ -185,6 +185,7 @@
                 calendarDiv.appendChild(dayHeader);
             });
 
+            // Giorni vuoti per allineare il primo giorno del mese
             for (let i = 0; i < primaGiorno; i++) {
                 let emptyDiv = document.createElement('div');
                 calendarDiv.appendChild(emptyDiv);
@@ -220,6 +221,7 @@
                     }
                 });
 
+                // Imposta il click per selezionare il giorno
                 dayDiv.onclick = () => selezionaGiorno(i, dayDiv);
                 calendarDiv.appendChild(dayDiv);
             }
