@@ -59,6 +59,9 @@
         .day.marked {
             background-color: #28a745;
         }
+        .day.selected {
+            background-color: orange;
+        }
         .total-hours {
             background-color: #ffc107;
             padding: 15px;
@@ -156,7 +159,7 @@
                     dayDiv.classList.add('marked');
                 }
                 
-                dayDiv.onclick = () => selezionaGiorno(i);
+                dayDiv.onclick = () => selezionaGiorno(i, dayDiv);
                 calendarDiv.appendChild(dayDiv);
             }
 
@@ -165,8 +168,16 @@
         }
 
         // Funzione per selezionare un giorno
-        function selezionaGiorno(giorno) {
+        function selezionaGiorno(giorno, dayElement) {
             selectedDay = giorno;
+
+            // Rimuove la classe 'selected' da tutti i giorni
+            const allDays = document.querySelectorAll('.day');
+            allDays.forEach(day => day.classList.remove('selected'));
+
+            // Aggiunge la classe 'selected' al giorno cliccato
+            dayElement.classList.add('selected');
+
             document.getElementById('oreLavorate').value = '';
             document.getElementById('oreStraordinario').value = '';
             document.getElementById('orePausa').value = '';
