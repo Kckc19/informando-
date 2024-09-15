@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #2E2E2E; /* Colore scuro di sfondo */
+            color: #EAEAEA; /* Colore chiaro del testo */
+            margin: 0;
+            padding: 2rem;
+        }
+        .dashboard-container {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: auto;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+            color: #F1C40F; /* Colore di accento per il titolo */
+        }
+        .section {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+        .card {
+            background-color: #3C3C3C; /* Colore di sfondo della card */
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            margin: 1rem;
+            flex: 1 1 calc(45% - 2rem);
+            max-width: calc(45% - 2rem);
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.3s;
+        }
+        .card:hover {
+            transform: scale(1.05);
+            background-color: #4A4A4A; /* Colore di sfondo al passaggio del mouse */
+        }
+        .card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #F1C40F; /* Colore di accento per il testo della card */
+        }
+        .weather-widget {
+            margin-top: 2rem;
+            text-align: center;
+        }
+        .weather-widget iframe {
+            width: 100%;
+            height: 400px;
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        @media (max-width: 768px) {
+            .card {
+                flex: 1 1 100%;
+                max-width: 100%;
+            }
+            .weather-widget iframe {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <h1>Benvenuto nella Dashboard</h1>
+        <div class="section">
+            <div class="card" onclick="window.location.href='percorsi.html'">
+                <h2>Percorsi</h2>
+                <p>Visualizza i tuoi percorsi.</p>
+            </div>
+            <div class="card" onclick="window.location.href='https://jauthentication.enerj.it/Identity/Account/Login?ReturnUrl=%2Fconnect%2Fauthorize%2Fcallback%3Fresponse_type%3Dcode%26client_id%3D7cce4d2f31b649f980f02903e18ff557%26state%3DSEJLVGR-RGF2S1JnanBsUH5qWVhDT1FJNVFfMEtOR1BQay5MWUZRUX5HV05U%26redirect_uri%3Dhttps%253A%252F%252Fpersonale.rossettogroup.it%252Fcallback%26scope%3Dopenid%2520profile%2520%26code_challenge%3D_XF2b1kvxeQAn2hMDnKJZGizdzPuuqxplUutlRQ5UBM%26code_challenge_method%3DS256%26nonce%3DSEJLVGR-RGF2S1JnanBsUH5qWVhDT1FJNVFfMEtOR1BQay5MWUZRUX5HV05U'">
+                <h2>Busta Paga</h2>
+                <p>Controlla la tua busta paga.</p>
+            </div>
+        </div>
+        <div class="section">
+            <div class="card" onclick="window.location.href='segnaore.html'">
+                <h2>Segnaore</h2>
+                <p>Registra le tue ore lavorative.</p>
+            </div>
+            <div class="card" onclick="window.location.href='appuntamenti.html'">
+                <h2>Appuntamenti</h2>
+                <p>Gestisci i tuoi appuntamenti.</p>
+            </div>
+        </div>
+        <div class="section">
+            <div class="card" onclick="window.location.href='info_traffico.html'">
+                <h2>Informazioni Traffico</h2>
+                <p>Consulta le informazioni sul traffico.</p>
+            </div>
+        </div>
+        <div class="section">
+            <div class="card" onclick="window.location.href='index.html'">
+                <h2>Torna alla Pagina di Login</h2>
+                <p>Accedi nuovamente al tuo account.</p>
+            </div>
+        </div>
+        <div class="weather-widget">
+            <h2>Previsioni Meteo</h2>
+            <iframe id="weather-iframe" src="" title="Previsioni Meteo"></iframe>
+        </div>
+    </div>
+
+    <script>
+        // Funzione per ottenere la posizione dell'utente
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showWeather);
+            } else {
+                document.getElementById('weather-iframe').src = 'https://weatherwidget.io/widget?location=default';
+            }
+        }
+
+        // Funzione per mostrare il meteo
+        function showWeather(position) {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+
+            // Usa un servizio di meteo che supporta i parametri di latitudine e longitudine
+            // Nota: Sostituisci con un URL di un widget meteo che accetta lat e lon come parametri
+            const weatherUrl = `https://weatherwidget.io/widget?lat=${lat}&lon=${lon}`;
+
+            document.getElementById('weather-iframe').src = weatherUrl;
+        }
+
+        // Chiama la funzione per ottenere la posizione e caricare il meteo
+        getLocation();
+
+        // Salvataggio dei dati dell'utente
+        window.onload = function() {
+            if (localStorage.getItem('username')) {
+                // Recupera e utilizza i dati salvati, es. per personalizzare la dashboard
+                console.log("Dati salvati per l'utente:", localStorage.getItem('username'));
+            }
+        };
+
+        // Esempio di come salvare i dati (non password)
+        function saveUserData(username) {
+            localStorage.setItem('username', username);
+        }
+
+        // Aggiungi qui il tuo codice per gestire il salvataggio dei dati dell'utente
+        // Ad esempio, quando l'utente effettua il login o aggiorna le informazioni
+        // saveUserData('utente_esempio');
+    </script>
+</body>
+</html>

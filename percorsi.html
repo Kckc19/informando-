@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Percorsi e Mappe</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #2E2E2E;
+            color: #EAEAEA;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #F1C40F;
+            margin-bottom: 20px;
+        }
+        .tabs {
+            display: flex;
+            cursor: pointer;
+            background: #3C3C3C;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .tab {
+            flex: 1;
+            padding: 10px 20px;
+            text-align: center;
+            background: #555;
+            border-right: 1px solid #444;
+            transition: background 0.3s ease;
+            color: #EAEAEA;
+        }
+        .tab:last-child {
+            border-right: none;
+        }
+        .tab:hover {
+            background: #666;
+        }
+        .tab.active {
+            background: #3C3C3C;
+            font-weight: bold;
+            color: #F1C40F;
+            border-bottom: 1px solid transparent;
+        }
+        .tab-content {
+            display: none;
+            background: #3C3C3C;
+            padding: 20px;
+            border: 1px solid #444;
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        a {
+            color: #1a0dab;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>Punti e Percorsi</h1>
+
+    <div class="tabs">
+        <div class="tab active" data-target="andata">Andata a Mantova</div>
+        <div class="tab" data-target="ritorno">Ritorno a Mantova</div>
+        <div class="tab" data-target="deviazioni">Deviazioni</div>
+        <div class="tab" data-target="alternative">Alternative</div>
+    </div>
+
+    <div id="andata" class="tab-content active">
+        <h2>Andata a Mantova</h2>
+        <p><strong>Da Rossetto Mantova a Rossetto Desenzano</strong></p>
+        <a href="https://goo.gl/maps/xmRxurqHiT9g4u3J8" target="_blank">Visualizza Mappa</a>
+
+        <p><strong>Da Casalgrande a Mantova</strong></p>
+        <a href="https://maps.app.goo.gl/ngSJ5ziimyCTKbPp7" target="_blank">Visualizza Mappa</a>
+
+        <p><strong>Da Fiorano a Mantova</strong></p>
+        <a href="https://maps.app.goo.gl/EdzPjAfHeinRDkK76" target="_blank">Visualizza Mappa</a>
+
+        <p><strong>Da Rossetto Mantova a San Maurizio</strong></p>
+        <a href="http://maps.google.com/maps?saddr=Rossetto%20Trade%20Srl.&daddr=Rossetto%20Group%20Srl&geocode=FdEMsQIdL7ClACkFFwPditWBRzHDia0JZdXCSg%3D%3D%3BFR-2qQIdUxyjACmxq4fRfR2ARzHuNKhFKr13iw%3D%3D&dirflg=d" target="_blank">Visualizza Mappa</a>
+
+        <p><strong>Da Mantova a San Giorgio delle Pertiche</strong></p>
+        <a href="https://www.google.it/maps/dir/Rossetto+Trade+Srl.,+Via+Villanova+de+Bellis,+San+Giorgio+Bigarello,+MN/45.4203613,11.9355339/45.5350053,11.9515705/Iper+Rossetto,+Via+Caselle,+1,+35010+San+Giorgio+delle+Pertiche+PD/@45.5349931,11.9171001,13z/data=!3m1!5s0x477ed3a3821537df:0xd5aae46f72bca420!4m16!4m15!1m5!1m1!1s0x4781d58add031705:0x4ac2d56509ad89c3!2m2!1d10.8585433!2d45.1575851!1m0!1m0!1m5!1m1!1s0x477ed3a47c1a5f0d:0xafb9e945707413de!2m2!1d11.9248119!2d45.5392709!3e0" target="_blank">Visualizza Mappa</a>
+
+        <p><strong>Da Mantova a Cremona</strong></p>
+        <a href="https://www.google.it/maps/dir/Rossetto+Trade+Srl.,+Via+Villanova+de+Bellis,+San+Giorgio+Bigarello+MN/45.1607219,10.8454545/45.1572862,10.8352022/45.1691846,10.8267422/45.2262411,10.7294368/45.1612039,10.6597929/Super+Rossetto,+C.C.+I+Navigli,+Via+delle+Fiamme+Gialle,+16%2F18,+26100+Cremona+CR/@45.1620058,10.6597714,16z/data=!4m19!4m18!1m5!1m1!1s0x4781d58add031705:0x4ac2d56509ad89c3!2m2!1d10.8585433!2d45.1575851!1m0!1m0!1m0!1m0!1m0!1m5!1m1!1s0x4780fe07f766b367:0x69e816c6b106bd6d!2m2!1d10.6906102!2d45.1592802!3e0" target="_blank">Visualizza Mappa</a>
+    </div>
+
+    <div id="ritorno" class="tab-content">
+        <h2>Ritorno a Mantova</h2>
+
+        <p><strong>Da Rossetto Desenzano a Rossetto Mantova</strong></p>
+        <a href="https://goo.gl/maps/Snc7Fak8MGe2mNMe8" target="_blank">Visualizza Mappa</a>
+
+        <p><strong>Da Occhiobello a Mantova</strong></p>
+        <a href="https://goo.gl/maps/juGSZmjzaYS2pu1e8" target="_blank">Visualizza Mappa</a>
+
+        <p><strong>Da Spaziani a Mantova</strong></p>
+        <a href="https://goo.gl/maps/nxSuoyqWZ5oMZzGW7" target="_blank">Visualizza Mappa</a>
+
+        <p><strong>Da Parona a Mantova</strong></p>
+        <a href="https://goo.gl/maps/MAuSVfHKzswrDF6r7" target="_blank">Visualizza Mappa</a>
+
+        <p><strong>Da Cremona a Mantova</strong></p>
+        <a href="https://www.google.it/maps/dir/Super+Rossetto,+C.C.+I+Navigli,+Via+delle+Fiamme+Gialle,+16%2F18,+26100+Cremona+CR/45.2284217,10.7293391/45.1694462,10.8266705/45.1571967,10.8350786/45.1607297,10.8454125/Rossetto+Trade+Srl.,+Via+Villanova+de+Bellis,+San+Giorgio+Bigarello+MN/@45.1576688,10.8350243,12z/data=!4m19!4m18!1m5!1m1!1s0x4780fe07f766b367:0x69e816c6b106bd6d!2m2!1d10.6906102!2d45.1592802!1m0!1m0!1m0!1m0!1m0!1m5!1m1!1s0x4781d58add031705:0x4ac2d56509ad89c3!2m2!1d10.8585433!2d45.1575851!3e0" target="_blank">Visualizza Mappa</a>
+    </div>
+
+    <div id="deviazioni" class="tab-content">
+        <h2>Deviazioni</h2>
+
+        <p><strong>Da Marcon Mantova deviazione uscita aeroporto</strong></p>
+        <a href="https://www.google.com/maps/dir/45.5457365,12.3036797/45.536245,12.3005353/Rossetto+Trade+S.p.a.,+Via+Villanova+de+Bellis,+San+Giorgio+Bigarello,+Mantova/@45.5058621,12.133089,11z/data=!4m10!4m9!1m0!1m0!1m5!1m1!1s0x4781d58add031705:0x4ac2d56509ad89c3!2m2!1d10.8585433!2d45.1575851!3e0?hl=it&entry=ttu&g_ep=EgoyMDI0MDkxMS4wIKXMDSoASAFQAw%3D%3D" target="_blank">Visualizza Mappa</a>
+
+        <p><strong>Da Mantova a Marcon deviazione uscite aeroporto</strong></p>
+        <a href="https://www.google.com/maps/dir/Rossetto+Trade+S.p.a.,+Via+Villanova+de+Bellis,+San+Giorgio+Bigarello,+Mantova/45.5361279,12.3006781/45.5457365,12.3036797/@45.5445491,12.3065848,16z/data=!4m10!4m9!1m5!1m1!1s0x4781d58add031705:0x4ac2d56509ad89c3!2m2!1d10.8585433!2d45.1575851!1m0!1m0!3e0?hl=it&entry=ttu&g_ep=EgoyMDI0MDkwNC4wIKXMDSoASAFQAw%3D%3D&utm_medium=s2email&shorturl=1" target="_blank">Visualizza Mappa</a>
+
+        <p><strong>Da Mantova a San Giorgio delle Pertiche</strong></p>
+        <a href="https://www.google.it/maps/dir/Rossetto+Trade+Srl.,+Via+Villanova+de+Bellis,+San+Giorgio+Bigarello,+MN/45.4203613,11.9355339/45.5350053,11.9515705/Iper+Rossetto,+Via+Caselle,+1,+35010+San+Giorgio+delle+Pertiche+PD/@45.5349931,11.9171001,13z/data=!3m1!5s0x477ed3a3821537df:0xd5aae46f72bca420!4m16!4m15!1m5!1m1!1s0x4781d58add031705:0x4ac2d56509ad89c3!2m2!1d10.8585433!2d45.1575851!1m0!1m0!1m5!1m1!1s0x477ed3a47c1a5f0d:0xafb9e945707413de!2m2!1d11.9248119!2d45.5392709!3e0" target="_blank">Visualizza Mappa</a>
+    </div>
+
+    <div id="alternative" class="tab-content">
+        <h2>Alternative</h2>
+
+        <p><strong>Da Mantova a Cremona</strong></p>
+        <a href="https://www.google.it/maps/dir/Rossetto+Trade+Srl.,+Via+Villanova+de+Bellis,+San+Giorgio+Bigarello+MN/45.1607219,10.8454545/45.1572862,10.8352022/45.1691846,10.8267422/45.2262411,10.7294368/45.1612039,10.6597929/Super+Rossetto,+C.C.+I+Navigli,+Via+delle+Fiamme+Gialle,+16%2F18,+26100+Cremona+CR/@45.1620058,10.6597714,16z/data=!4m19!4m18!1m5!1m1!1s0x4781d58add031705:0x4ac2d56509ad89c3!2m2!1d10.8585433!2d45.1575851!1m0!1m0!1m0!1m0!1m0!1m5!1m1!1s0x4780fe07f766b367:0x69e816c6b106bd6d!2m2!1d10.6906102!2d45.1592802!3e0" target="_blank">Visualizza Mappa</a>
+
+        <p><strong>Da Mantova a San Giorgio delle Pertiche</strong></p>
+        <a href="https://www.google.it/maps/dir/Rossetto+Trade+Srl.,+Via+Villanova+de+Bellis,+San+Giorgio+Bigarello,+MN/45.4203613,11.9355339/45.5350053,11.9515705/Iper+Rossetto,+Via+Caselle,+1,+35010+San+Giorgio+delle+Pertiche+PD/@45.5349931,11.9171001,13z/data=!3m1!5s0x477ed3a3821537df:0xd5aae46f72bca420!4m16!4m15!1m5!1m1!1s0x4781d58add031705:0x4ac2d56509ad89c3!2m2!1d10.8585433!2d45.1575851!1m0!1m0!1m5!1m1!1s0x477ed3a47c1a5f0d:0xafb9e945707413de!2m2!1d11.9248119!2d45.5392709!3e0" target="_blank">Visualizza Mappa</a>
+
+       
+        <p><strong>DaMarcon Mantova deviazione uscita aeroporto</strong></p>
+        <a href="https://www.google.com/maps/dir/45.5457365,12.3036797/45.536245,12.3005353/Rossetto+Trade+S.p.a.,+Via+Villanova+de+Bellis,+San+Giorgio+Bigarello,+Mantova/@45.5058621,12.133089,11z/data=!4m10!4m9!1m0!1m0!1m5!1m1!1s0x4781d58add031705:0x4ac2d56509ad89c3!2m2!1d10.8585433!2d45.1575851!3e0?hl=it&entry=ttu&g_ep=EgoyMDI0MDkxMS4wIKXMDSoASAFQAw%3D%3D" target="_blank">Visualizza Mappa</a>
+        <p><strong>Da Mantova a Marcon deviazione uscite aeroporto</strong></p>
+        <a href="https://www.google.com/maps/dir/Rossetto+Trade+S.p.a.,+Via+Villanova+de+Bellis,+San+Giorgio+Bigarello,+Mantova/45.5361279,12.3006781/45.5457365,12.3036797/@45.5445491,12.3065848,16z/data=!4m10!4m9!1m5!1m1!1s0x4781d58add031705:0x4ac2d56509ad89c3!2m2!1d10.8585433!2d45.1575851!1m0!1m0!3e0?hl=it&entry=ttu&g_ep=EgoyMDI0MDkwNC4wIKXMDSoASAFQAw%3D%3D&utm_medium=s2email&shorturl=1" target="_blank">Visualizza Mappa></a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function () {
+                    const targetId = this.getAttribute('data-target');
+
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(tc => tc.classList.remove('active'));
+
+                    this.classList.add('active');
+                    document.getElementById(targetId).classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
