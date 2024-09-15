@@ -144,6 +144,7 @@
             <div class="calendar-header-day">Ven</div>
             <div class="calendar-header-day">Sab</div>
             <div class="calendar-header-day">Dom</div>
+            <!-- Le caselle dei giorni saranno inserite dinamicamente dallo script -->
         </div>
     </div>
 
@@ -180,7 +181,7 @@
                 const totalDays = lastDayOfMonth.getDate();
 
                 // Crea celle vuote per i giorni precedenti
-                for (let i = 0; i < dayOfWeek; i++) {
+                for (let i = 0; i < (dayOfWeek + 6) % 7; i++) {
                     calendarEl.innerHTML += '<div class="calendar-day"></div>';
                 }
 
