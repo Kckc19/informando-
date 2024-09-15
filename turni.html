@@ -201,9 +201,16 @@
                     const currentDateISO = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), i).toISOString().split('T')[0];
                     const daysSinceStart = (new Date(currentDateISO) - new Date('2024-09-01')) / (24 * 60 * 60 * 1000);
 
-                    let turnStartDate;
+                    let turnType = '';
                     if (daysSinceStart % 21 === 0) {
-                        turnStartDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), i);
+                        turnType = 'Giornaliero';
+                    } else if (daysSinceStart % 21 === 7) {
+                        turnType = 'Pomeriggio';
+                    } else if (daysSinceStart % 21 === 14) {
+                        turnType = 'Mattino';
+                    }
+
+                    if (turnType === 'Giornaliero') {
                         for (let j = 0; j < 7; j++) { // Giorni del turno giornaliero
                             if (i + j <= totalDays) {
                                 const dayElement = calendarEl.children[(dayOfWeek + i - 1 + j) % 7];
@@ -211,8 +218,7 @@
                                 dayElement.setAttribute('data-event', 'Giornaliero');
                             }
                         }
-                    } else if (daysSinceStart % 21 === 7) {
-                        turnStartDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), i);
+                    } else if (turnType === 'Pomeriggio') {
                         for (let j = 0; j < 5; j++) { // Giorni del turno pomeridiano
                             if (i + j <= totalDays) {
                                 const dayElement = calendarEl.children[(dayOfWeek + i - 1 + j) % 7];
@@ -220,8 +226,7 @@
                                 dayElement.setAttribute('data-event', 'Pomeriggio');
                             }
                         }
-                    } else if (daysSinceStart % 21 === 14) {
-                        turnStartDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), i);
+                    } else if (turnType === 'Mattino') {
                         for (let j = 0; j < 6; j++) { // Giorni del turno mattutino
                             if (i + j <= totalDays) {
                                 const dayElement = calendarEl.children[(dayOfWeek + i - 1 + j) % 7];
