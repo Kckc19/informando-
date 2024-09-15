@@ -158,10 +158,8 @@
             let currentMonth = new Date();
             currentMonth.setDate(1); // Inizia dal primo giorno del mese
 
-            const holidays = ['2024-12-25', '2024-01-01']; // Esempio di festività (Natale e Capodanno)
-
-            function isHoliday(date) {
-                return holidays.includes(date.toISOString().split('T')[0]);
+            function getDaysInMonth(year, month) {
+                return new Date(year, month + 1, 0).getDate();
             }
 
             function renderCalendar() {
@@ -181,7 +179,7 @@
                 const totalDays = lastDayOfMonth.getDate();
 
                 // Crea celle vuote per i giorni precedenti
-                for (let i = 0; i < (dayOfWeek + 6) % 7; i++) {
+                for (let i = 0; i < dayOfWeek; i++) {
                     calendarEl.innerHTML += '<div class="calendar-day"></div>';
                 }
 
@@ -192,14 +190,9 @@
                     dayElement.className = `calendar-day ${dayClass}`;
                     dayElement.textContent = i;
 
-                    // Gestisci le festività
-                    if (isHoliday(new Date(currentMonth.getFullYear(), currentMonth.getMonth(), i))) {
-                        dayElement.classList.add('holiday');
-                    }
-
-                    // Aggiungi eventi
-                    const currentDateISO = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), i).toISOString().split('T')[0];
-                    const daysSinceStart = (new Date(currentDateISO) - new Date('2024-09-01')) / (24 * 60 * 60 * 1000);
+                    // Gestisci i turni
+                    const startDate = new Date('2024-09-01');
+                    const daysSinceStart = Math.floor((new Date(currentMonth.getFullYear(), currentMonth.getMonth(), i) - startDate) / (24 * 60 * 60 * 1000));
 
                     let turnType = '';
                     if (daysSinceStart % 21 === 0) {
@@ -210,28 +203,12 @@
                         turnType = 'Mattino';
                     }
 
-                    if (turnType === 'Giornaliero') {
-                        for (let j = 0; j < 7; j++) { // Giorni del turno giornaliero
+                    if (turnType) {
+                        for (let j = 0; j < 7; j++) {
                             if (i + j <= totalDays) {
                                 const dayElement = calendarEl.children[(dayOfWeek + i - 1 + j) % 7];
-                                dayElement.classList.add('event-giornaliero');
-                                dayElement.setAttribute('data-event', 'Giornaliero');
-                            }
-                        }
-                    } else if (turnType === 'Pomeriggio') {
-                        for (let j = 0; j < 5; j++) { // Giorni del turno pomeridiano
-                            if (i + j <= totalDays) {
-                                const dayElement = calendarEl.children[(dayOfWeek + i - 1 + j) % 7];
-                                dayElement.classList.add('event-pomeriggio');
-                                dayElement.setAttribute('data-event', 'Pomeriggio');
-                            }
-                        }
-                    } else if (turnType === 'Mattino') {
-                        for (let j = 0; j < 6; j++) { // Giorni del turno mattutino
-                            if (i + j <= totalDays) {
-                                const dayElement = calendarEl.children[(dayOfWeek + i - 1 + j) % 7];
-                                dayElement.classList.add('event-mattino');
-                                dayElement.setAttribute('data-event', 'Mattino');
+                                dayElement.classList.add(`event-${turnType.toLowerCase()}`);
+                                dayElement.setAttribute('data-event', turnType);
                             }
                         }
                     }
