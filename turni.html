@@ -7,127 +7,188 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
             margin: 0;
             padding: 20px;
-        }
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        .calendar {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        .calendar th, .calendar td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: center;
-        }
-        .calendar th {
             background-color: #f4f4f4;
         }
+        .calendar-container {
+            text-align: center;
+        }
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            max-width: 1000px;
+            margin: auto;
+        }
+        .calendar div {
+            width: 100px;
+            height: 100px;
+            box-sizing: border-box;
+            text-align: center;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
         .header {
-            background-color: #dcdcdc;
+            background-color: #e0e0e0;
             font-weight: bold;
         }
-        .holiday {
-            background-color: #ffdddd;
+        .sunday {
+            background-color: #ffcccc;
+            color: #fff;
         }
-        .morning, .afternoon {
-            background-color: #e0e0e0;
+        .highlight-red {
+            background-color: #ff0000; /* Rosso */
+            color: #fff;
+        }
+        .daily {
+            background-color: #ffff99; /* Giallo chiaro */
+        }
+        .afternoon {
+            background-color: #ccffff; /* Celeste chiaro */
+        }
+        .morning {
+            background-color: #ffcc99; /* Arancione chiaro */
+        }
+        .shift-name {
+            font-size: 12px;
+            font-weight: bold;
+            color: #333;
+            margin-top: 5px;
         }
         .nav-buttons {
-            text-align: center;
             margin: 20px 0;
         }
-        .month-name {
-            text-align: center;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        .highlight {
-            background-color: yellow;
+        .nav-buttons button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <h1>Calendario Turni</h1>
+    <div class="calendar-container">
         <div class="nav-buttons">
-            <button onclick="changeMonth(-1)">Mese Precedente</button>
-            <button onclick="changeMonth(1)">Mese Successivo</button>
+            <button id="prevMonth">Mese Precedente</button>
+            <button id="nextMonth">Mese Successivo</button>
         </div>
-        <div id="calendarContainer"></div>
+        <h2 id="monthYear"></h2>
+        <div class="calendar" id="calendar"></div>
     </div>
 
     <script>
-        const daysOfWeek = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'];
+        let currentYear = new Date().getFullYear();
+        let currentMonth = new Date().getMonth();
+        let currentShift = 0; // Track the current shift
 
-        let currentMonth = new Date(2024, 8); // Settembre 2024
+        function getShiftType(shiftIndex) {
+            const shiftTypes = ['daily', 'afternoon', 'morning'];
+            return shiftTypes[shiftIndex % 3];
+        }
 
-        function generateCalendar(year, month) {
-            const firstDay = new Date(year, month, 1);
-            const lastDay = new Date(year, month + 1, 0);
-            const daysInMonth = lastDay.getDate();
-            const monthName = firstDay.toLocaleString('it-IT', { month: 'long' });
-            const calendarHTML = `<div class="month-name">${monthName} ${year}</div>
-                <table class="calendar">
-                <thead>
-                    <tr class="header">`;
+        function getShiftName(shiftType) {
+            const shiftNames = {
+                daily: 'Giornaliero',
+                afternoon: 'Pomeriggio',
+                morning: 'Mattino'
+            };
+            return shiftNames[shiftType];
+        }
 
-            daysOfWeek.forEach(day => {
-                calendarHTML += `<th>${day}</th>`;
+        function createCalendar(year, month) {
+            const calendar = document.getElementById('calendar');
+            const monthYear = document.getElementById('monthYear');
+            calendar.innerHTML = '';
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const startDay = new Date(year, month, 1).getDay();
+            const totalDays = startDay === 0 ? 6 : startDay - 1;
+
+            monthYear.textContent = `${['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'][month]} ${year}`;
+
+            const weekdays = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'];
+            weekdays.forEach(day => {
+                const header = document.createElement('div');
+                header.textContent = day;
+                header.className = 'header';
+                calendar.appendChild(header);
             });
 
-            calendarHTML += `</tr></thead><tbody><tr>`;
-
-            // Fill in the days before the first day of the month
-            for (let i = 0; i < firstDay.getDay(); i++) {
-                calendarHTML += `<td></td>`;
+            // Create empty cells for days before the start of the month
+            for (let i = 0; i < totalDays; i++) {
+                calendar.appendChild(document.createElement('div'));
             }
 
-            // Generate days of the month
-            for (let day = 1; day <= daysInMonth; day++) {
-                const currentDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                const isSunday = new Date(year, month, day).getDay() === 0;
-                const isWeekend = (day % 7 === 1) || (day % 7 === 0); // Domenica
+            // Define the turn cycle
+            const shiftCycle = ['daily', 'afternoon', 'morning'];
 
-                calendarHTML += `<td class="${isSunday ? 'holiday' : ''}">
-                    ${day}
-                    <br>Mattino
-                    <br>Pomeriggio
-                </td>`;
+            let shiftIndex = currentShift;
 
-                if (new Date(year, month, day).getDay() === 6) {
-                    calendarHTML += `</tr><tr>`;
+            // Loop through each day of the month
+            for (let i = 1; i <= daysInMonth; i++) {
+                const day = document.createElement('div');
+                day.textContent = i;
+
+                const dayOfWeek = (i + totalDays - 1) % 7;
+
+                if (dayOfWeek === 6) { // Domenica
+                    day.className = 'sunday';
+                } else {
+                    // Set turn type based on the shiftIndex
+                    const shiftType = shiftCycle[shiftIndex % shiftCycle.length];
+                    day.className = shiftType;
+                    day.innerHTML = `
+                        <div>${i}</div>
+                        <div class="shift-name">${getShiftName(shiftType)}</div>
+                    `;
+                }
+
+                calendar.appendChild(day);
+
+                // Move to the next shift each Saturday
+                if (dayOfWeek === 5) {
+                    shiftIndex++;
                 }
             }
 
-            // Fill in the days after the last day of the month
-            const lastDayOfWeek = lastDay.getDay();
-            for (let i = lastDayOfWeek + 1; i <= 6; i++) {
-                calendarHTML += `<td></td>`;
+            // Update the global shift index
+            currentShift = shiftIndex % shiftCycle.length;
+        }
+
+        function updateCalendar() {
+            createCalendar(currentYear, currentMonth);
+        }
+
+        document.getElementById('prevMonth').addEventListener('click', () => {
+            if (currentMonth === 0) {
+                currentMonth = 11;
+                currentYear--;
+            } else {
+                currentMonth--;
             }
+            updateCalendar();
+        });
 
-            calendarHTML += `</tr></tbody></table>`;
+        document.getElementById('nextMonth').addEventListener('click', () => {
+            if (currentMonth === 11) {
+                currentMonth = 0;
+                currentYear++;
+            } else {
+                currentMonth++;
+            }
+            updateCalendar();
+        });
 
-            return calendarHTML;
-        }
-
-        function displayCalendar() {
-            const calendarContainer = document.getElementById('calendarContainer');
-            calendarContainer.innerHTML = generateCalendar(currentMonth.getFullYear(), currentMonth.getMonth());
-        }
-
-        function changeMonth(direction) {
-            currentMonth.setMonth(currentMonth.getMonth() + direction);
-            displayCalendar();
-        }
-
-        // Display the initial calendar
-        displayCalendar();
+        // Initialize the calendar
+        updateCalendar();
     </script>
 </body>
 </html>
