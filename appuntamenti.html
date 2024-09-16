@@ -16,7 +16,7 @@
         .container {
             max-width: 600px;
             margin: 0 auto;
-            background-color: #3C3C3C; /* Colore scuro del contenitore */
+            background-color: #FFFFFF; /* Colore di sfondo bianco per il contenitore */
             padding: 2rem;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -24,22 +24,22 @@
         h1 {
             text-align: center;
             margin-bottom: 1.5rem;
-            color: #F1C40F; /* Colore di accento per il titolo */
+            color: #333333; /* Colore scuro per il titolo */
         }
         label {
             display: block;
             margin-bottom: 0.5rem;
             font-weight: bold;
-            color: #F1C40F; /* Colore di accento per le etichette */
+            color: #333333; /* Colore scuro per le etichette */
         }
         input, textarea {
             width: 100%;
             padding: 0.8rem;
             margin-bottom: 1rem;
             border-radius: 4px;
-            border: 1px solid #555; /* Colore del bordo scuro */
-            background-color: #4A4A4A; /* Colore di sfondo scuro per input e textarea */
-            color: #EAEAEA; /* Colore del testo chiaro */
+            border: 1px solid #CCCCCC; /* Colore del bordo chiaro */
+            background-color: #F9F9F9; /* Colore di sfondo chiaro per input e textarea */
+            color: #333333; /* Colore del testo scuro */
         }
         button {
             display: block;
@@ -61,7 +61,7 @@
             text-align: center;
         }
         #calendar-link a {
-            color: #F1C40F; /* Colore di accento per il link */
+            color: #007BFF; /* Colore di accento per il link */
             text-decoration: none;
             font-weight: bold;
         }
@@ -98,32 +98,22 @@
             const startDate = document.getElementById('start-date').value;
             const endDate = document.getElementById('end-date').value;
 
-            // Converte le date in formato iCal
+            // Controllo validità date
+            if (!startDate || !endDate || new Date(startDate) >= new Date(endDate)) {
+                alert("Assicurati che la data di inizio sia precedente alla data di fine.");
+                return;
+            }
+
+            // Converte le date nel formato accettato per il webcal
             const startDateTime = new Date(startDate).toISOString().replace(/[-:]/g, '').replace(/\.\d+Z$/, 'Z');
             const endDateTime = new Date(endDate).toISOString().replace(/[-:]/g, '').replace(/\.\d+Z$/, 'Z');
 
-            const icsContent = `
-BEGIN:VCALENDAR
-VERSION:2.0
-PRODID:-//Your Company//NONSGML Your Product//EN
-BEGIN:VEVENT
-UID:${startDateTime}-${title}@yourdomain.com
-DTSTAMP:${startDateTime}
-DTSTART:${startDateTime}
-DTEND:${endDateTime}
-SUMMARY:${title}
-DESCRIPTION:${description}
-END:VEVENT
-END:VCALENDAR
-            `.trim();
+            // Contenuto evento per URL webcal
+            const webcalUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${description}&dates=${startDateTime}/${endDateTime}`;
 
-            // Codifica il contenuto ICS in base64
-            const encodedIcs = btoa(icsContent);
-            const webcalUrl = `data:text/calendar;base64,${encodedIcs}`;
-
-            // Mostra il link per il download
+            // Mostra il link per aggiungere l'evento
             document.getElementById('calendar-link').innerHTML = `
-                <a href="${webcalUrl}" download="appuntamento.ics">Scarica il file .ics per aggiungere al Calendario</a>
+                <a href="${webcalUrl}" target="_blank">Aggiungi al Calendario Apple</a>
             `;
         }
     </script>

@@ -4,60 +4,80 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        @font-face {
+            font-family: 'San Francisco';
+            src: url('https://cdn.jsdelivr.net/gh/sahibjotsaggu/css-apple-system-fonts/SFProDisplay-Regular.woff2') format('woff2');
+        }
         body {
-            font-family: 'Roboto', sans-serif;
+            font-family: 'San Francisco', 'Helvetica Neue', Arial, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: #2E2E2E; /* Colore scuro di sfondo */
+            background: linear-gradient(135deg, #141E30, #243B55); /* Sfondo sfumato dinamico */
         }
         .login-container {
-            background-color: #3C3C3C; /* Colore scuro del contenitore */
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            background-color: rgba(255, 255, 255, 0.15); /* Contenitore trasparente */
+            backdrop-filter: blur(10px); /* Effetto di sfocatura per dare un tocco moderno */
+            padding: 3rem;
+            border-radius: 16px;
             width: 100%;
             max-width: 400px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2); /* Ombra più pronunciata per dare profondità */
+            text-align: center;
         }
         .login-container h2 {
-            margin-bottom: 1.5rem;
-            font-size: 1.8rem;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
             font-weight: 700;
-            text-align: center;
-            color: #F1C40F; /* Colore di accento per il titolo */
+            color: #fff; /* Colore bianco per il titolo */
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
         }
         .login-container input {
             width: 100%;
             padding: 1rem;
-            margin-bottom: 1rem;
-            border: 1px solid #555; /* Colore del bordo più scuro */
-            border-radius: 5px;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.4); /* Bordo trasparente */
+            border-radius: 10px;
             font-size: 1rem;
-            background-color: #2E2E2E; /* Colore di sfondo input */
-            color: #EAEAEA; /* Colore del testo degli input */
+            background-color: rgba(255, 255, 255, 0.1); /* Sfondo semitrasparente */
+            color: #fff; /* Testo bianco */
+            transition: border 0.3s ease, box-shadow 0.3s ease;
+        }
+        .login-container input:focus {
+            border-color: #0071e3; /* Blu Apple al focus */
+            box-shadow: 0 0 10px rgba(0, 113, 227, 0.5); /* Effetto bagliore */
+            outline: none;
         }
         .login-container button {
             width: 100%;
             padding: 1rem;
-            background-color: #007BFF; /* Colore di sfondo del pulsante */
+            background: linear-gradient(135deg, #0071e3, #1c83f6); /* Gradiente blu accattivante */
             color: white;
             border: none;
-            border-radius: 5px;
-            font-size: 1rem;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
             cursor: pointer;
+            transition: background 0.3s ease, transform 0.3s ease;
         }
         .login-container button:hover {
-            background-color: #0056b3; /* Colore del pulsante al passaggio del mouse */
+            background: linear-gradient(135deg, #005bb5, #0071e3); /* Transizione del gradiente al hover */
+            transform: translateY(-3px); /* Effetto movimento al passaggio del mouse */
+            box-shadow: 0 8px 20px rgba(0, 113, 227, 0.5); /* Aumenta l'ombra al hover */
+        }
+        .login-container button:active {
+            transform: translateY(0); /* Reset movimento al click */
+            box-shadow: 0 4px 12px rgba(0, 113, 227, 0.3); /* Riduci ombra al click */
         }
     </style>
 </head>
 <body>
     <div class="login-container">
-        <h2>Login</h2>
+        <h2>Accedi</h2>
         <form id="loginForm" onsubmit="validateLogin(event)">
             <input type="text" id="username" placeholder="Username" required>
             <input type="password" id="password" placeholder="Password" required>
@@ -71,7 +91,7 @@
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
 
-            // Credenziali scelte da te
+            // Credenziali di esempio
             const correctUsername = "admin";
             const correctPassword = "password123";
 
